@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bobcat's Blog</title>
+<link href="common.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+<div class="content">
+	<h1 style="text-align:center;">Bobcat's Blog</h1>
+	
+	<!--#include file="index_header.html" -->
+
+	<br>
+	<div class="blog-panel"> <img src="img/TEST.png" class=blog-image />
+		<div class="blog-desc">
+			<h3><a href="blog/20240704-bedrock.html">In The Matters Of Bedrock Ores</a></h3>
+			2024-07-04 <hr>
+			Bedrock ores are kinda dumb if you think about it - too many types, too much maximum yield,
+			nether ores being horrendous, too little processing variety...what do?
+		</div>
+	</div>
+</div>
+
+</body>
+</html>
