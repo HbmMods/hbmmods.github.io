@@ -9,6 +9,35 @@
 
 <div class="content">
 	<h1 style="text-align:center;">Blobcat's Bog</h1>
+	<div class="blog-entry">
+		<h3>What once was</h3>
+		The original bedrock ores were kind of stupid. While I never declared the bedrock ores as WIP, I never really considered them as finished either. They were more of an experiment than anything that was final, but for lack of a better alternative they stuck around for quite some time. The original set od bedrock ores had a fair amount of flaws:
+		<ul>
+			<li>Processing was bland, the entire chain was just repeatedly acidizing then centrifuging until you're had enough (or ran out of acid) and shredded the remainder into enriched ore.</li>
+			<li>Byproducts were not very interesting either. Byproducts came from an alt chain initiated by using nitric acid (bleugh) which would quadruple the amount of ore like the other chain, but add two fragments of byproducts. Those fragments could then be directly crafted into a byproduct powder which had no further processing.</li>
+			<li>The original roster had only a few bedrock ores, but as demand grew it spiraled into more and more ore types until it was near impossible to actually find the type you want. At the same time, automating a significant amount of types required an equally significant amount of bedrock drills and acidizer setups to accompany them.</li>
+			<li>The resulting inflation of types forced me to make bedrock ores incredibly common (i.e. 33% of chunks had them) which made mining close to bedrock level a chore due to the depth rock covering the ore.</li>
+		</ul>
+
+		<h3>First ideas</h3>
+		For a replacement system, two things became clear very ealry on:
+		<ol>
+			<li>Ores would need to be condensed, one drill should be able to create multiple resources and the amount of bedrock ores should be mininmal</li>
+			<li>Processing should have more steps and more machines, many optional steps for streamlining and due to the first point's compressed nature of bedrock ores, larger setups would be incentivized because they yield more final product</li>
+		</ol>
+		The next part was figuring the How and What, vague ideas are great but without a concrete plan they won't be useful.
+
+		<h3>Enter the Perlin noise</h3>
+		After some debating with Martin, he brought up that bedrock ore might make use of perlin noise for its generation. I'm not exactly sure how he meant that, because as it turns out the final approach i chose was not what he was talking about at all, but at least the idea with perlin noise struck gold.<br>
+		Instead of having many bedrock ores in the world, there would be just one: Raw Bedrock Ore. This raw bedrock ore would then have several types all at once, and use location-based perlin noise - it's kinda how the game generated hills and mountains, but instead of physical blocks it's an invisible value that determines the richness of an ore.
+
+		<h3>And then</h3>
+		After some tinkering, the final bedrock ore processing line ended up like thus: The raw bedrock ore item, when extracted, generates NBT data describing the richness of each ore type (of which there are six). The raw ore is then fed into the Bedrock Ore Processor which, as the name implies, turns the raw ore into the six bedrock ore types. The amount produced depends on the richness of the raw ore, and slop is produced as a byproduct which can be processed into its own byproducts (because fluid processing is fun!)<br>
+		These bedrock ore types can now be fed into the processing chain, at its core it's still acidizing with a tiered fluid and then centrifuging for increasing the yield and shedding byproduct, however there are several differences. Before the main chain even starts, there are several optional steps (for example roasting which yields vitriol, another fluid byproduct), as well as several ways of processing the endpoint materials (that being the resulting primary fractions as well as crumbs).<br> Byproducts are no longer just crystals which are crafted into a material, but rather have their own short chain (optional roasting and arc smelting recipes with mandatory washing step at the end). Finally, crumbs which come from primary fraction processing, can be collected and acidized back into a full bedrock ore of the same type - while not creating a full infinite loop, it stil means you can get more out of your leftovers.
+
+	</div>
+
+	there's no back button yet
 </div>
 
 </body>
