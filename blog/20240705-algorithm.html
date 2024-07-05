@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bobcat's Blog</title>
+<link href="../common.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+<div class="content">
+	<h1 style="text-align:center;">Bebcat's Blag</h1>
+	<div class="blog-entry">
+
+		<h3>Nuclear Explosions and You</h3>
+		Explosions are...big. They pose quite the challenge to implement, given that it has to remove thousands if not millions of blocks in a timespan as short as possible, with the crater looking presentable, as well as respecting blast resistance among other things. But that hasn't always been the case. Over the past decade, nuclear explosions have evolved a fair bit, steadily becoming faster and better.
+		
+		<h3>Origins</h3>
+		All the way back in 2014 during the development of Nuke Mod v1, the bomb blocks already had a custom system instead of relying on vanilla. The code itself was a gift by Rodol who helped me in the early days of getting used to working on mods, the algorithm being a very simple "triple pythagoras", three nested for loops creating a cube shape and some basic trigonometry to figure out if a block is within range which then gets deleted. This approach created a perfectly circular hole, and nowadays I refer to it as "Mk0".<br><br>
+		But as with all things, soon I realized that nukes shouldn't really work like that, so I made some minor modifications, instead of the uniformly jagged edges (a result of some randomness sprinkled into the math), only the top half would be a sphere with random deviation, the bottom half was scaled down vertically by a factor of 10 and perfectly smooth, creating nice and clean craters, this is what would later be known as "Mk1".<br><br>
+		Version 1.0.0 was created, but never released. This is because of an observation about Mk1; the entire explosion ran at once, hundreds of thousands of block checks happening in an instant, grinding the internal server to a halt. Most TNT mods at the time, and still today, suffer from the same issue, large explosions are calculated with a vanilla-esque system that runs until it's done, and only then may the server proceed doing other things. This would simply not do for explosions of the desired size.
+
+		<h3>A step up</h3>
+		And there came another gift from Rodol, the algorithm for Rival Rebels' own Tsar Bomba. It's a delayed system tied to the updates of an invisible controller entity, shaving off the landscape layer by layer until the explosion was complete. The crater still had the same limitations, ignoring blast resistance (resistant blocks would simply stay but the blocks behind them would not) and creating a perfectly smooth crater. Placing a nuke just 15 blocks above ground would usually result in no blocks actually being destroyed, but despite its faults, and the fact that the block breaking was slow as molasses, it did let the world thread breathe instead of freezing the game, and so on August 27th of 2015, version 1.0.1 was released using the Mk2 explosion algorithm.<br><br>
+		Not long after NTM's code was first uploaded to Github, in late 2017 the first feature pull request was opened, and the topic was explosions. Github user gangerave made a few changes to the Mk2 system which then turned into the Mk3: Explosions higher up would be less flat, meaning craters would still touch the ground (assuming standard terrain height), blocks were checked from top to bottom and if a blast resistant block was detected, up to five of the blocks below it would be spared. The new system, while still having most of the issues of the old ones, could now (more or less) work on any height, and would not wreck the insides of concrete houses. Due to the primitive nature of the check, all a bunker needed was a roof but no walls whatsoever, but even still, the change was generally recognized as an improvement and the Mk3 was released.
+
+		<h3>Ray, based</h3>
+		The Mk3 turned out to be short lived. In the week before Easter of 2018, after a restless night of contemplating new algorithms, the Mk4 system was born. At its core, it is largely similar with vanilla explosions, the explosion would send out invisible "rays" in all direction with a strength level, the ray would travel through blocks, subtracting their blast resistance from its strength until it reached 0, which marked the endpoint of the ray. Once all rays were completed, the controller would go over each ray and delete all blocks intersecting with them.<br><br>
+		A system with the same concept is still in use today, and it got several upgrades. First, instead of firing rays out randomly (which created the need for redundancy and was generally inaccurate), a basic system for spacing out the rays was put into place (which was the reason for the iconic "dying pacman" explosions). Later, the spacing system was replaced with a spiral-point algorithm which would space out the rays even more efficiently and accurately. Due to the lower demand of rays, lower redundancy and shorter calculation phase, the explosion became much faster compared to the original Mk4.<br><br>
+		Despite its strengths however, the Mk4 system still had its flaws. Most notably, towards the center, the rays are incredibly dense in order to sustain a minimal density of 1 ray per block on the outer edges. this means during the calculation phase, a lot of processing power goes into redundant rays, and during the processing phase, a lot of duplicate blocks would be destroyed. Another issue is that before any block breaking happens, the calculation phase has to be complete, and for large nukes that often means waiting 10 minutes before anything visibly happens.
+
+		<h3>On a trail</h3>
+		As early as 2020, the need for a Mk5 became apparent, one that would iron out the remaining issues and create the perfect explosion. The original issue to fix was chosen to be the redundant calculations, after all the calculation phase has always been the longest. Several approaches have been tried:
+		<ul>
+			<li><b>Caching blocks using hashmaps, weeding out duplicates.</b> This ended up inflating RAM usage and slowing the system down to a crawl, because millions of repeated hashing operations ended up being slower than the block breaking it was intended to prevent</li>
+			<li><b>Caching blocks using an array, also to remove duplicates.</b> The array, despite logically being smaller, ended up a similar size of the hashmap. An added complication was the fixed size of the array, as well as any inaccuracy with the indices would immediately crash the game.</li>
+			<li><b>Branching rays, in order to prevent duplicates from existing in the first place.</b> Considerable effort went into this, and a prototype was made. The hardest part was the reverse detection: The explosion has to go inside-out to do all the blast resistance checks in order, but the ray positions need to be calculated outside-in because it's the outermost blocks that need to be barely covered, so the ray distribution hinged solely on that. Due to this, a system had to be put into place to match the outside positions with the rays on the inside. Overall the system worked, but the branches caused constant "bends" in the rays which made the calculation unreliable, often times an area would explode but the topmost layer of blocks would be left intact. In addition, the reverse calculation put enormous strain on the CPU, which meant the explosion was faster, but not by much.</li>
+		</ul>
+
+		Overall, the Mk5 project was considered a failure and in 2021 it was put on ice.
+
+		<h3>But what about the other issue?</h3>
+		The Mk5 gained some attention a year later in summer of 2022, the original idea was to fix the inefficiency during the caluclation phase. However, the "dying pacman" block destruction phase was also very slow due to these duplicates, so a new approach was chosen.<br><br>
+		After some trial and error, a new Mk5 was born, one that was as accurate as the Mk4 before it but with incredibly fast block breaking. A few changes had to be made:
+		<ul>
+			<li>Instead of just saving rays in a list, rays are saved in lists which were part of a hashmap, effectively creating a data structure that would contain every affected chunk and with it, every ray that intersects with that chunk.</li>
+			<li>Instead of processing entire rays, which needs to deal with many blocks in distance places, tons of lighting updates and so on, the system would process entire chunks. It orders chunks by proximity to the center, then iterates over them, grabbing the list of rays intersecting with this chunk and process those.</li>
+			<li>Instead of simply deleting blocks that intersect with the rays in a given chunk, first the system writes all affected block positions to a hashset. A set has the quality that it only allows an entry to exist once, so effectively this step causes the chunk to be converted into a list of unique affected block positions.</li>
+			<li>Finally, the explosion iterates over each affected block position and deletes it. Processing an entire chunk at once favors lighting updates and causes fewer issues when explosions intersect with unloaded chunks, since instead of constantly loading and unloading chunks each step, a chunk is only loaded once, then processed as a whole. In addition, there is no more redundant operations, at least when breaking the blocks, which does save a noticeable amount of time.</li>
+		</ul>
+		By simply looking at a different part to optimize, we managed to find a way to get a working system which beats the old one by sheer speed. The added hashmaps do take some extra RAM, but some optimization steps were taken that as soon as a chunk is processed, all related data is removed, so the garbage collector will free up RAM as soon as possible. The end result was that small explosions (100-120 block radius) would complete within mere seconds, sometimes seemingly instantly on better hardware, while larger explosions (Tsar with 500 blocks) would still take quite a long time, but significantly shorter (16 minutes with the Mk5 vs >40 minutes with the old Mk4 on my shitty hardware).
+
+		<h3>What the future holds</h3>
+		Despite the Mk5 only being one year old and therefore fairly young compared to the half a decade of the Mk4's reign, there are plans for an Mk6. The issue of the slow block allocation remains, and optimistic estimates show that a sub 5 minute Tsar is theoretically possible. Getting large explosions to scale more efficiently and weeding out the remaining issues, we might see bombs with larger radii in the future. More details on the Mk6's history thus far as well as the proposed mechanism will come another time.
+
+	</div>
+
+	<a href="../index.html">&lt; I hate it here</a>
+</div>
+
+</body>
+</html>
