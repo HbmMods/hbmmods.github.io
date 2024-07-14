@@ -3,6 +3,8 @@ body {
 	height: 100%;
 	color: #FFF;
 	background-color: #000;
+    font-family: monospace;
+    font-size: 15px;
 }
 
 h1 {
@@ -30,6 +32,7 @@ a:hover {
 	padding: 20px;
 	background-color: #777;
 	border-style: outset;
+	border-color: #aaa;
 }
 
 .blog-panel {
@@ -40,7 +43,7 @@ a:hover {
 	color: #FFF;
 	background-color: #444;
 	border-style: inset;
-	border-color: #000;
+	border-color: #aaa;
 }
 
 .blog-image {
@@ -48,7 +51,7 @@ a:hover {
 	height: 200px;
 	float: left;
 	border-style: outset;
-	border-color: #000;
+	border-color: #aaa;
 }
 
 .blog-desc {
@@ -58,7 +61,7 @@ a:hover {
 	padding-top: 0px;
 	float: right;
 	border-style: outset;
-	border-color: #000;
+	border-color: #aaa;
 }
 
 .blog-entry {
@@ -67,5 +70,5 @@ a:hover {
 	background-color: #444;
 	margin: auto;
 	border-style: inset;
-	border-color: #000;
+	border-color: #aaa;
 }
