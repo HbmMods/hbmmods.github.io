@@ -72,3 +72,10 @@ a:hover {
 	border-style: inset;
 	border-color: #aaa;
 }
+
+.blog-entry-image {
+	display: block;
+	margin: auto;
+	border-style: inset;
+	border-color: #aaa;
+}

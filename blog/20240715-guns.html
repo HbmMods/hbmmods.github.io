@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bobcat's Blog</title>
+<link href="../common.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+<div class="content">
+	<h1 style="text-align:center;">Bopcat's Bloq</h1>
+	<div class="blog-entry">
+
+		<h3>A (very) brief history on guns</h3>
+		Guns! One of the core aspects of the mod since the early days was its explosives. So it wasn't a stretch to add a rocket launcher, after all what is a rocket launcher if not a bow that fires an arrow that explodes. And now that we have that, why not a revolver? Why not five revolvers, with different tiers and ammo types? Why not a gun but instead of firing when you release it, it fires constantly <i>until</i> you release it?<br><br>
+		The addition of a simple rocket launcher with the most bare-bones code imaginable spiraled into the addition of dozens of guns, all with the same flaws: Shit code that had to be copy pasted, shit usage of needing to wind them up like bows, shit graphics, shit everything.<br>
+
+		<h3>In the now</h3>
+		In 2020 (might have been 2021), guns (at least most of them) got a brand new system, instead of each gun having its own class with the same repeated vomit code, unique ammo for no reason and bow pull mechanics, guns got a shared class (which some have to extend) which is at its core controlled by a "gun configuration", a wrapper that holds stats like magazine size, reload type, ammo types, etc.<br><br>
+		And then the problems started. The class is one monolithic blob of code which does everything, adding functionality means screwing around with the base that ALL guns used, which sometimes had the unintended side effect of altering the behavior of completely unrelated guns, or outright breaking some functionality.<br><br>
+		What's more, most guns are historic relics, with the recipes and damage values being a product of their time, but in modern day NTM a lot of them no longer fit for various reasons. Many of the guns look outdated, many aren't viable at all, and some have never even been ported to the modern gun base system in the first place.
+
+		<h3>A better approach</h3>
+		The need for a new system became clear. While the new base code hasn't begun being developed yet, there's a few core ideas that will hopefully yield a more modular and easier to work with base code:
+		<ol>
+			<li>All older models are either scrapped or remade, new models are made to fill the gaps. Models should adhere to the new standard, and all guns should have animations with quality comparable to Atlas/Lil'Pip</li>
+			<li>All stats are remade from the ground up, instead of damage being fixed to ammo type, damage would be fixed to the guns themselves, and ammo subvariants would provide modifiers.</li>
+			<li>All recipes are also made from scratch, guns are assigned into "slots" along progression which is where their base damage value as well as material gating comes from.</li>
+			<li>The general structure of the gun base class needs to be overhauled, the current iteration is just a single class that a select few guns extend in order to staple more functionality onto the code which wouldn't be possible by just using the gun config:
+				<ul>
+					<li>At its core, there would be a simple interface which would link to the event handler in order to make use of common keybinds. This interface can then be attached to any item class that needs keybinds like clicking, not only do all guns need this (which is why it forms the lowest level), but many non-gun items may also benefit from this (chainsaws, drills, other tools, etc.).</li>
+					<li>Implementing this interface would be an abstract class which forms the base of all guns. This class would provide the most common utility functions like inventory checks for reloading, handling for animations and so on, but most importantly it would carry a state machine. Unlike the old system which had multiple timers and counters for many things (reload delay, fire delay, burst delay, and so on), it would have just one global delay which decides how long a state persists, along with a list of states and a small "decider" which leads to the next state depending on certain criteria. This base class would just provide the infrastructure for this state machine, the actual states and decider are up to the implementing classes.</li>
+					<li>In addition to the classes in the hierarchy, there would be "modules", i.e. adaptable and swappable parts that can be plugged into the gun system as needed, this would include magazines, HUD elements and other smaller traits.</li>
+					<li>On top of the base class, there would be one common implementor, the standard gun class. This standard class comes with the most commonly used states and an appropriate decider, its functionality can be compared to the current system's ItemGunBase. The standard gun class would grab the final values from gun configurations, and make use of one magazine and one HUD module.</li>
+					<li>Guns that work so drastically different that they cannot use the standard class can simply extend the base class directly and then provide their own states and decider to fit their purpose, as well as make use of any modules as necessary.</li>
+					<li>Gun configurations would still largely work as they do in the current system, where they are just large wrappers for providing common values to the standard gun implementation. However there is one key difference: Instead of just being fields, they would be named tags. This has the advantage that gun mods/upgrades become significantly easier to implement, the upgrade simply needs to provide its own gun configuration with override/modifier values (similar to how vanilla's attribute system works!) and the final value (damage, fire rate, etc.) is then evaluated when needed.</li>
+				</ul>
+			</li>
+		</ol>
+
+		TL;DR instead of one monolithic class that handles everything (and does so poorly), the new system would be made up from multiple smaller parts which are generic in their operation, swappable and easily extendable. Having extra HUD bars in addition to weapon condition (or removing weapon condition entirely) isn't really possible with the current system, in the new one it would be a matter of adding or removing a desired HUD module.
+
+		<img src="../img/20240715-uml.png" class="blog-entry-image" style="margin-top: 40px; margin-bottom: 40px;" />
+
+		As you can see by this expertly crafted UML-esque diagram (fuck UML), the new gun code is going to be, something, I forgot where I was going with this.
+
+	</div>
+
+	<a href="../index.html">&lt; oh god let me out</a>
+</div>
+
+</body>
+</html>
