@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bobcat's Blog</title>
+<link href="../common.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+<div class="content">
+	<h1 style="text-align:center;">Bebcat's Bleg</h1>
+	<div class="blog-entry">
+		<h3>The Bibble</h3>
+		The NTM Design Bibble is a loose collection of design principles (including code, assets and general game design) which went into NTM. These principles aren't rigid, absolute word of God, rather they are general guidelines which may be ignored if the situation demands it. Addendum: I may have trailed off into more ranting and yapping, oops
+
+		<h3>Code</h3>
+		<h4>- Keep It Simple, Stupid</h4>
+		The KISS principle may be as old as time, but there is undeniably beauty in simplicity. Code should be structured in a way that, even after 10 years at 3 in the morning while piss drunk, it should be obvious at a glance what the code does and how it works. There are many smaller parts to this (and I really don't want to go into too much detail) but all of them ultimately serve the sole purpose of keeping the code slim (if possible), readable (mandatory) and maintainable (de-facto mandatory). There are cases where "simpler" code may perform worse than some optimized version, however usually the difference isn't very severe, so using code that is not as good at what it does but easier to understand is often times still preferable.<br>
+		Some people pretend that using comments is a cardinal sin because "well actually, code should be self-documenting". Code <i>should</i> be self-documenting but that doesn't mean comments are haram. I don't make use of them often, but they can help shine a light on things that, for whatever reason, aren't that easy to understand on their own. Also making lenghty rants about stupid shit Mojang does is kinda fun.
+
+		<h4>- It's in the Name</h4>
+		Naming things like fields and functions is quite important, often times code reads somewhat like a novel - even when you don't know the implementation of the 15 methods being invoked, the naming alone should tell enough about what it does to make sense even without the context of the method's inner workings. Once again this point is quite vague and there's no "true" way of doing it right, but if you can look at your code years after the fact and still correctly guess what a method does based on the name alone, it's probably good enough.
+
+		<h4>- Format Wars Episode IV: A New hope</h4>
+		I know this is a touchy subject for some, but indentation in NTM uses strictly tabs instead of spaces. This has the following advantages:
+		<ul>
+			<li>Hitting backspace will shift the whole indentation level instead of just deleting one space out of four</li>
+			<li>Using the arrow keys moves the cursor between indentation levels instead of singular spaces</li>
+			<li>Selecting a method requires far less precision in order to not also select leading whitespace before the method header</li>
+			<li>Tabs look much cleaner with whitespace view enabled (one small arrow every 4 characters vs a dot every single character)</li>
+			<li>Misaligning indentation becomes impossible, as tabs always snap to the full indentation level</li>
+		</ul>
+		The only disadvantage is that tabs may not always be consistent depending on application or settings, however most editors have agreed to use 4 spaces per tab in source files like 20 years ago so cry about it.
+
+		<h3>Assets</h3>
+		<h4>- Kit, Bash</h4>
+		A lot of NTM's textures and models are kitbashed, i.e. parts of existing assets have been glued together into entirely new things. There's no definitive standard for the general design of models, but some general parts, be it ports, tanks or parts of the texture, have been reused over and over again in many models. This doesn't just create some sense of unity between the models (again, there's no standard so any model may deviate for whatever reason), but it also makes the creation process easier - why invent a new solution to some common problem when we can just reuse parts of existing models to fill that gap. A small, non-exhaustive list of common kitbash parts follows:
+		<ul>
+			<li>Port textures for either power or fluids are often directly reused, even if the port size is not always consistent (varies usually between 6 and 8 pixels) the texture is often the same</li>
+			<li>"Families" of machines often have mostly reused textures, "industrial" machines (liquefactor, solidifier, chemfac) share the same beige color palette, oil machines often share the same plating texture, etc.</li>
+			<li>Block textures are often reused on models, most famously the concrete texture which is used for The Slab(tm), but concrete is also sometimes used as a multiplicative layer for adding noise (for instance, in the insides of the new acidizer model)</li>
+			<li>Colors themselves are often reused, many machines share the same color gradients (usually three tones for the edges) even when completely unrelated</li>
+			<li>Many machines have relatively flat textures, and if noise is present, it's usually made by a small repeating texture (like the aforementioned concrete), this has the added advantage that PNG compression can work more effectively as its compression is lossless and based on omitting repeated parts. This was the main drive behind making fluid tanks all flat, there's over a hundred fluids and having only a few unique colors and large areas of flat color allows every single tank texture combined to be less than 190kB</li>
+			<li>The Slab(tm) is a common theme of many machine models, being a simple foundation made from industrial tinge concrete on which the actual machine rests, which has all relevant ports on the side. The Slab(tm) has become an iconic staple of NTM's designs, not just unifying the designs despite the actual machines being quite different, but also standardizing the way ports behave, all ports are neatly placed on the bottom in predictable spots, instead of being all over the place (see: old acidizer model)</li>
+		</ul>
+
+		<h4>- Model Consistency</h4>
+		Models are a huge part of NTM, both figuratively and literally. Despite the added detail compared to vanilla or some other mods, I do aim to keep models comparatively simple. Often times details can easily be handled via the texture, and simpler models are both easier on the FPS and easier to UV. UV aims to be consistent with vanilla, one block should equate to exactly 16 pixels wherever possible. Because of this, models themselves are made to a specific standard, vertices of all axis-aligned parts (mostly boxes and derivatives) are in positions that are multiples of 0.0625 (1/16 of a block or one pixel), with the exception of the occasional half-pixel wherever necessary. This ensures that all faces have a shape and size consistent with pixels, allowing for easier UV and looking less out of place. This principle does not extend to slopes and cylinders, for cylinders I usually just approximate to the nearest pixel count and for slopes I use the pixel count of the longer axis (for a slope spanning 3 pixels sideways and 8 pixels up, that's 8 pixels) to remain consistent with the bordering faces.<br>
+		UV is very important, as it dictates how textures are applied to a model. To ensure the UV is up to spec, before the UV process I make a "template" by examining every single face of a model, converting its measurements to pixels and then drawing the face onto a sheet with solid color, after the template is done it is cropped, imported into Blender and the actual UV is being done, which using a template is simply a matter of dragging the UV regions to their equivalent on the template and then hitting "snap to pixel".
+
+		<h4>- Gooey</h4>
+		GUI design has changed over the years, but there are a few parts that have remained consistent all the way:
+		<ul>
+			<li>Colors are usually consistent with other GUIs, either using the vanilla palette or one of the several NTM palettes (most notable is the beige one used for most "industrial" machines)</li>
+			<li>Gauges always use the same measuring line format and only come in 16 pixels (one slot), 34 pixels (two slots) or 7 pixels (half slot) width. Gauges are traditionally always vertical, however for a small number of machines like the arc welder, horizontal gauges were necessary.</li>
+			<li>Slots are always supposed to align with the player inventory grid, either directly or half way, i.e. a slot's position is a multiple of 9 pixels from the slot border</li>
+			<li>For the longest time, all GUIs used the vanilla "square" shape format, however many newer GUIs use non-standard custom formats as well as regions with "depth", all those parts however still use the vanilla borders for consistency</li>
+			<li>Slots that only take one item or one family of items are usually marked with an outline</li>
+			<li>Fluid gauges use a standardized format for the tooltip, so all relevant info is always the same</li>
+			<li>Buttons generally always have fake depth to make them stand out, and if the button causes a state change, the button's label either changes or the depth is inverted to give a "pushed-in" look. The vanilla button system is not used, as the button style doesn't fit in most GUIs, the buttons have fixed height and the code is overcomplicated</li>
+		</ul>
+		Some GUIs do not meet these standards, most of which were contributed via PR (and these standards were never publicly mentioned before).
+
+		<h4>- Texture (In)Consistency</h4>
+		Textures are historically inconsistent and have always followed the principle of "whatever looks good enough I guess". NTM employs a ton of different styles especially for item textures:
+		<ul>
+			<li>Many textures are based on 1.7's vanilla textures, which are already somewhat inconsistent in some cases</li>
+			<li>NTM also mixes the vanilla textures with some of the newer 1.14 JAPPA textures. While I have some gripes with JAPPA, most of them are not with the textures themselves (just some of them), but rather how many mods have abandoned their own style to fully adopt JAPPA. JAPPA style applies to many ingots (using the vanilla copper ingot base directly), many autogen items (for simplicity's sake those were made to JAPPA specification with outlines and limited color palette, as well as being internally consistent with each other and the ingots) and a small assortment of block textures (glyphid hives are recolored brain corals)</li>
+			<li>Certain modern "guidelines" for textures demand a limited color palette as well as outlines. Some items have outlines, some don't, some textures have limited color palettes and some use rendered clouds or gradients which add many unique colors</li>
+			<li>Block styles wildly differ, plastic blocks for example are mostly flat, some machine blocks use rendered clouds, some emulate the old vanilla style for low-res sprites and a few blocks use a small palette with heavy dithering to give the illusion of depth</li>
+			<li>A small selection of item textures are actually 32x32 pixels instead of the standard 16x16</li>
+			<li>Some textures were contributed by completely different people, some of which are pixel artists, so the quality is noticeably different from NTM's programmer art textures</li>
+		</ul>
+		Overall there's not really a standard when it comes to textures, only a few groups of related textures have a sort of common theme.
+
+		<h3>Gaem Desnig</h3>
+		<h4>- Rule of Cool</h4>
+		Probably the highest ranking rule that may overshadow everything else - sometimes things don't really have any rhyme or reason, proper utility, balance or anything else, sometimes things are just done because they (sound) cool. From a processing standpoint, there's not really any purpose for the compressors, they don't really add much complexity and the few unique recipes they do have could just as well be part of a different machine, but they were added because these large hammers that fall down making a hefty "clank!" look and sound nice. Most guns were added by this principle, there's not really a reason to have most of them, but at least at the time it seemed like a good idea because whatever gun just looked cool. Why would a tech mod need plushies? Well it doesn't, but I think they're neat.
+
+		<h4>- Progression</h4>
+		One of the most important aspects of NTM is its progression, powerful items aren't just expensive, they're gated behind multiple machines and processes. There's a list of machines that produce progression relevant materials which are mandatory to use in order to reach the lategame. However, many machines are designed to be entirely optional, either allowing to help with a special task that otherwise has to be done manually (like the automatic buzzsaw) or giving alternate ways of obtaining certain materials or extra power (biofuel or coal oil from the combination oven). This makes it so that progressing isn't a lengthy, drawn-out chore, rather it can be done at someone's own pace, either speeding straight to the RBMK or slowly building up a large factory producing and burning tons of oil. While the latter option is the one I prefer and I would rather people would do, I don't think artificially drawing out the progression is a good idea, some people would rather skip some parts (like setting up a huge refinery, despite that being one of the coolest things), and I do value player freedom to some extent.
+
+		<h4>- Options</h4>
+		Optional content that doesn't affect progression is nice, but we can do one better: We can give options <i>within</i> progression. There are some materials which follow what I like to call the "principle of alternatives", where some materials are 100% interchangeable, with the difference being how that material is obtained. Some examples:
+		<ul>
+			<li>Polymer is an earlygame material made from petroleum gas, coal powder and fluorite. Fluorite especially is kinda painful to get in large quantities early on, but as soon as oil cracking is discovered, it can be fully replaced by bakelite, which is made from petroleum gas and aromatics. Polymer however is still viable for people who don't want to build a larger cracking setup, and who can afford the extra fluorite, usually through bedrock ore</li>
+			<li>Rubber is a bit of an odd case because while it can fully replace latex, it doesn't work the other way round. Rubber is a post cracking gating material while latex is available in earlygame (literally dandelions), so them being 100% interchangeable would break progression. However it does mean that latex can be fully replaced by rubber which can be automated at an industrial scale</li>
+			<li>Rubber also has alternate recipes, which following the scheme set by polymer and bakelite should yield different items, but don't (because who cares). Rubber can be made from fish oil or from vulcanizing latex with sour gas</li>
+			<li>Technetium is an artificial material only obtained by reprocessing spent fuel or lategame bedrock ore processing, used in making technetium steel. Post RBMK it can be replaced with cadmium steel, where the cadmium is sourced from mustard willow plants processed with solvent. Technetium steel is more attractive to people who automate that ZIRNOX or PWR, while cadmium steel is more viable with a fracking setup combined with a source of high-performance solvent</li>
+			<li>Hard plastic and PVC are a bit of a special case, as they become available at the same time. Hard plastic is made from vacuum oils and phosgene which itself needs a bit of a larger setup to make while PVC uses cadmium, while also more difficult to make it can share the output from cadmium steel production, whichever way is better is entirely up to the player</li>
+			<li>While not a material themselves, the reactors used to get technetium are interchangeable: The ZIRNOX is a cheaper early reactor, while the PWR is fully modular and easier to automate, both ways are similarly viable and which reactor is used (or possibly both) is up to the player</li>
+		</ul>
+
+		Despite what Doom Eternal players will like to tell you, options are in fact a good thing, and providing multiple ways of approaching an problem should be encouraged. More optional content includes:
+		<ul>
+			<li>Bedrock ores are entirely optional, all resources can be obtained manually. However, bedrock ores are strongly recommended because they are a reliable way of fully automating resources</li>
+			<li>Item automation, while recommended in certain cases, can be replaced with efficient batch crafting. Batch crafting requires more user intervention, but doesn't need as much infrastructure or setup</li>
+			<li>Configs are in place that allow recipes to be altered, either cutting out entire parts of progression, or making previously optional parts mandatory. Custom machines also add a large degree of potential extra content</li>
+			<li><i>Strictly speaking,</i> due to Minecraft being a sandbox game, <i>all</i> content is optional. It is perfectly valid to only play the mod's progression to a certain point, and then do something else entirely, hell, I have played on a server for a while without ever even making an assembly machine. Pre-assembler content already has a few interesting things, as does vanilla.</li>
+			<li>The new bedrock ore system in particular has a lot of steps if you want to, or it can be really short. Many of the steps are entirely optional, but yield more byproducts or even more of the main product if desired. A small setup is perfectly valid and may give you all the things that you need, but with higher demand, larger processing setups with more of the optional steps become more attractive</li>
+		</ul>
+
+		<h4>- La Realismé</h4>
+		Realism can be a powerful tool, it gave inspiration to many parts of progression, many of the machines and processes. It is however not the law, rather just a very vague guideline, a set of ideas. If something doesn't serve gameplay, then realism has no place, it can be as unrealistic as possible.
+
+		<h4>- Infrastructure is a Human Right</h4>
+		If there is one thing I hate that almost every tech mod does then it's tiering. Machines that are functionally the same, but "oh it's made from slightly shinier metal so it's faster". While it doesn't really make sense, overall it's inoffensive in the terms of processing. But where it gets really ugly is infrastructure: Tiered cables, tiered pipes, tiered item transfer. Because it always leaves the question of "why?" What exactly is the point of tiers? Why do we need lower throughput cables if the amount of power machines can receive is already capped by that progression level's generators? At least in the case of IC2 it's understandable because of the voltage system, different voltages are treated differently by machines and therefore demand transformers and stronger cables. But in the case of Mekanism or Thermal Dynamics I simply do not see the point other than a very stupid "giving use to higher tier materials". Gameplaywise it doesn't add anything interesting, there's no overarching voltage mechanic to look out for, machines will simply refuse to accept more energy than they can take, cables just have a throughput limit "just because". Meanwhile it actively detracts from the game, imagine you have a factory where you upgrade your power supply, but oops, the cables don't support the extra juice, better rip out everything and replace all blocks 1:1 with a block of the higher tier. Truly riveting gameplay.<br>
+		This is why NTM cables have no intended limit (technical constraints still place a limit, but it is so high that people usually never encounter it) nor tiers, cables are cheap and readily available early on. The mod is about progression and the cool shit that follows, not pulling your hair out trying desperately to plug machines into an existing power grid and failing because of arbitrary throughput limits. Fluids follow the same principle, instead of most mods' pipes where fluid moves slowly with a limit, fluid transfer is instant like power and has a staggeringly high throughput cap.<br>
+		NTM conveyors do have some limitations, mostly with ejection speed, however the default ejection speed is so fast that it covers most cases in earlygame, and both the speed and ejected stack size can be easily modified with upgrades (which don't require separate blocks) or by simply using more ejectors. Belts also do not have an item limit, mainly because of performance concerns (checking the collisions for so many items would likely cause more lag than having 5x more items but with no collision checks at all) but also because it allows as much throughput as is needed without needing faster belts or multiple lanes.<br>
+		Despite this, multi lane and express conveyor belts do exist, multi lane belts were added for aesthetic reasons (refer to rule of cool) as well as their potential utility combined with conveyor grabbers, and express belts were only added after countless hours of yapping by people who pretend like they need them. For full automation, the speed of a conveyor belt is entirely irrelevant, it's the throughput that matters. The speed only changes the delay between the first item leaving and arriving, all subsequent arrivals are dictated by throughput. This is why I still consider the express belt to be virtually useless.
+
+		<h4>- A Word on Bobfluids</h4>
+		Boblfuids (that's technically not even the official name, someone else coined that term and I never came up with an official name) are not compatible with Forge fluids. The initial reason was that I simply wanted to write my own system for the sake of it. After a couple years and some rewrites, the system has evolved to a state where I think they are actually better suited for the mod than Forge fluids. Bobfluids have traits that are not available for Forge fluids, and can only be stored in NTM's own barrels and tanks. This means that NTM itself dictates what fluids can go where, imposing limits for storing fluids as well as how they can be removed. For instance, the Forge fluid compatible fluid trashcans can void fluids free of consequence, while NTM doesn't have an automatic way of doing that, instead, hazardous fluids need to be vented with consequences. Furthermore values in regards to fluid balance are now in the hands of NTM alone, like the amount of power created from steam, or the value/scarcity of certain fluid-based materials. Direct Forge fluid compatibility may result in some direct issues (like NTM-EE's interaction with IE's steam turbines which treat steam as having a much higher energy density, creating magnitudes more power, potentially allowing infinite energy loops with electric heaters).<br>
+		There are some other advantages that NTM's fluid net has, although those are not unique to Bobfluids and could be implemented with Forge fluids:
+		<ul>
+			<li>Fluid transfer is instant and has no set cap, the system will transfer as much liquid as the tanks can hold</li>
+			<li>Fluid ducts need to be assigned with a unique ID to work, while this approach needs slightly more setup to get pipes working, it ensures that fluids of different types can never collide in the same pipe net, it also simplifies the system for machines with multiple fluid outputs which would otherwise require some sort of filtering mechanism</li>
+			<li>Fluids are easy to add and manage based on NTM's demand</li>
+		</ul>
+
+		<h3>Support</h3>
+		One of the shittiest things that can happen to a mod is drop of all support, obviously I don't expect people to backport all new features to all old versions, however it's not uncommon that some mods are left with grave, gamebreaking issues in legacy versions while the new versions are still receiving updates. The logic here is that "it's not the newest version, therefore nobody should play it". This is not just shitty to a potentially large amount of players, it also shows a general disinterest in making good software. Most severe issues boil down to various crashes, which usually (but admittedly not always) can be fixed relatively quickly, not fixing large obvious issues like that just shows how little worth the legacy playerbase has to those devs.<br>
+		The two biggest reasons why I never ported the mod are that porting is exceedingly hard, time consuming and outright boring, and that I would prefer to maintain and improve the mod to the best of my ability instead of abandoning a version and putting all my time and energy just into porting over and over again. Back in 2016 I attempted to port to 1.8.9 which wasn't very successful, which I am very thankful for because in an alternate universe where I did succeed, most time wasn't spent on getting the mod where it is now, but rather on porting the terrible version to a lot of Minecraft versions with only minor improvements. I'd much rather stay on a 10 year old version and refine NTM than chase after Mojang's release cycle and give players a much smaller, less thought-out and sloppily put together mod. In a comparatively short timespan, NTM has changed quite a lot, with the difference becoming quite apparent to myself after I played with a 3 year old version of the mod a while ago. There was just so much wrong with quite literally anything that I'm not even sure how anyone could even play older NTM.
+
+	</div>
+
+	<a href="../index.html">&lt; ehehehehehe, this sucks </a>
+</div>
+
+</body>
+</html>
