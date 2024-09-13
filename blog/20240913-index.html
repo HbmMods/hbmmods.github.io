@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bobcat's Blog</title>
+<link href="../common.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+<div class="content">
+	<h1 style="text-align:center;">Bubcat's Blug</h1>
+	<div class="blog-entry">
+		<h3>More boring history lectures</h3>
+		I honestly cannot remember where the idea originated from, but about a year ago, the Redstone-over-Radio (RoR) system was created. Initially the system only had two components: A transmitter that would read redstone signals (or comparator output, if applicable), and a receiver that would turn radio signals back into redstone. Both components had various settings like polling/state change or an option for mapping redstone to named tags and vice versa, but on a fundamental level the system was only good for sending basic redstone. Later, a counter was added, replacing the simple comparator output with a precise item counter, using up to three filters and three sending frequencies.<br>
+		<br>
+		Despite only working with redstone, and by extension, simple numbers, the RoR "sending data" system was made to support arbitrary data. This was done for various planned features, most haven't gone anywhere until now. A couple months ago, I received a PR containing a new component, a logic receiver: A receiver component that replaces the simple named mapping system with various logic operations, number comparisons, substrings, inverted operations, etc. Despite its simplicity and the (currently) limited use, this was the final missing part that would allow for all these planned RoR components - INDEX.
+
+		<h3>INDEX who?</h3>
+		The idea for INDEX is as old as RoR itself, a simple interface allowing machines to produce and receive RoR info using special controller components, allowing automatic control over things that used to only be achievable with manual intervention via GUI, as well as automatic monitoring akin to what OpenComputers can do.<br>
+		<br>
+		The exact extent to what parts INDEX should have has changed over time and is still not certain, but the current estimate demands four major parts:
+		<ol>
+			<li>A logic receiver that can make sense of many different types of data, allowing things like progress bars, fluid gauges, reactor temperatures to be converted into redstone usable numbers. This part doesn't exactly use the INDEX system (i.e. the Java interfaces), however it is necessary to effectively use most of the other parts.</li>
+			<li>A reader that can be programmed to monitor values, either via polling or state change, and sends those over the programmed frequencies. This provides a very simple way of extracting information out of machines.</li>
+			<li>A controller that can be programmed to work on multiple frequencies to receive commands over, and then relay commands to the connected machine. This provides a very simple way of toggling or configuring machines, metaphorically "pulling levers" like one would via a GUI.</li>
+			<li>A programmer that receives commands which is relayed to the machine, which creates a return value that is being sent over a different frequency. While the practical applications for this are slim, this component alone can in theory do everything the previous two components do, albeit with more setup required. The programmer would be the equivalent to a complete Java method call, sending a command (i.e. the target method) with parameters and producing a return value that can be received and processed as desired.</li>
+		</ol>
+		Strictly speaking, the only of the three components that use the INDEX system that is necessary would be the programmer. However the other two components provide a smaller, but easier to use and quicker to set up, set of operations they can do, effectively making the programmer only really necessary for very special tasks.
+
+		<h3>So what does this mean for me?</h3>
+		INDEX allows a ton of new avenues:
+		<ul>
+			<li>The interactions that machines can now have with the world and each other via RoR can be compared to a low-powered version of OpenComputers, eliminating the strict need for OC for controlling certain things.</li>
+			<li>Factories and processes that previously relied on having machines back up with their output to halt the previous machine, can now be substantially smarter about it, for example a RoR reader could immediately detect if a recipe cannot be performed, preventing the need for using RoR on conveyors, which relies on the machine in question to be full before a signal from the conveyor inserter can even be read.</li>
+			<li>RBMKs are notorious for being only properly usable either with manual intervention or complicated OpenComputers scripts, instead, a redstone computer could automatically control the fuel crane, and multiple RoR components could automatically detect and react to temperature changes, controlling reactors with more logic behind them compared to automatic control rods.</li>
+			<li>Radars could output more detailed information about what types of things they detect, where those things are being detected, etc. Currently the only output a radar can detect is either by proximity of the nearest detected object, or the highest tier of all detected objects.</li>
+			<li>With a dedicated base station linked to a satellite, RoR could relay commands to satellites, allowing satellites to perform much more complex tasks like global radar detection, automatic target seeking, etc. Due to the arbitrary nature of RoR signals, mapping data could in theory be transmitted from a satellite base station to a radar screen, allowing monitoring of remote places via spy satelite.</li>
+			<li>And much much more.</li>
+		</ul>
+
+	</div>
+
+	<a href="../index.html">&lt; i wanna go home </a>
+</div>
+
+</body>
+</html>
