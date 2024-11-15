@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bobcat's Blog</title>
+<link href="../common.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+<div class="content">
+	<h1 style="text-align:center;">Bobgat's Glob</h1>
+	<div class="blog-entry">
+	
+		<h3>First, yet another word on the Mk5</h3>
+		In <a href="20240705-algorithm.html">one of the earliest blog posts</a>, I went over the different iterations of the nuclear explosion algorithm, of which there have been a total of five major iterations so far. The current version, the Mk5, improves on the way blocks marked for deletions are removed, but the underlying allocation system, the least efficient part that just doesn't scale well, is still practically the same as in the previous Mk4. Here's a quick recap on how the Mk5 works:
+		<ol>
+			<li>The explosion decides how many rays to cast based on the explosion's surface area (as we treat it like a sphere), then fires that many rays in all directions, spaced out evenly with a spiralpoint algorithm</li>
+			<li>Each ray has an initial strength depending on the explosion's strength, and every time a ray passes a block, that block's blast resistance is subtracted from the strength, until the ray stops either due to reaching the max length or by depleting the strength value</li>
+			<li>Each chunk that is affected by the explosion is saved to a hash map as the key, with the map's values being a list of rays. The lists are populated with the rays that intersect each given chunk. In short: We get a collection of all chunks and associated with each chunk, what rays affect that chunk</li>
+			<li>After all rays are calculated and saved, the explosion sorts the affected chunks by proximity to the center, then iterates over each chunk</li>
+			<li>Using some very basic approximation, the explosion then finds the part of each ray that affects the chunk and creates a set of all affected block positions. A set has the property of allowing no duplicate values, so this step weeds out any potential overlap regarding block removal</li>
+			<li>Finally, the system iterates over each block position in the given chunk, removes the block at that position, then continues with the next affected chunk until no more chunks are left to process</li>
+		</ol>
+		
+		As you can see the block removal process has a lot of steps to it, all of which ensure that the amount of work needed is as low as possible, making the explosion faster. The initial allocation system however simply casts rays from the center out to the very edges of the affected area, which means that in order to maintain a minimum density of one ray per block, to not leave any blocks out, the density of rays gets larger and larger towards the center until it reaches a <i>ridiculous</i> level. The centermost block of the explosion is affected by <i>every single ray,</i> which in the case of a medium sized nuke may be millions of rays all checking the same block.
+		
+		<h3>The first attempt</h3>
+		The allocation problem was initially planned to be solved with the Mk5, however the early prototypes did not work. The goal is to maintain a minimum ray density while not raising the density higher than what is necessary, so the first prototype has <i>splitting</i> rays, which would keep the density at a minimum and then multiply every time the minimum density is reached. The system worked by simply replicating the old Mk4 system but limiting the range, and then repeating it, extending the range, but instead of starting at the center, it starts at the endpoints of the previous iteration. While this would have worked in theory, in practice due to the direction in which rays need to be processed, rays had to "back-calculate" what its predecessor ray was instead of predecessors simply creating successors. The back calculation step relied on an array that would "snap" rays into a grid so that using approximation, a nearest predecessor could be found. This solution proved to be insufficient, as the angles created by the splits would render the system rather inaccurate, while the pack-calculation further decreased the accuracy as well. Finally, the calculation step was incredibly inefficient, so the resulting explosion was barely faster than most Mk4 variants while being simply not accurate enough to be usable.
+		
+		<h3>Geodesic Polyhedra</h3>
+		Later, just after the release of the current Mk5, a similar approach was attempted, but instead of just blindly copying the Mk4's ray spread and doing costly calculations to create ugly angles, a better approach was tested. Geodesic polyhedra are 3D shapes which start off with a base (like a cube, tetrahedron or icosahedron) and are then subdivided and inflated to approach a sphere. The subdivision was pretty much exactly what was needed for the new Mk6, since instead of doing costly back-calculations, preceding rays would simply find their successors via subdivision of the overarching polyhedron. A simulator was created in C#, proving that using a geodesic polyhedron was both feasible and accurate, however the calculation process was still rather costly (scaling similarly poorly as the Mk4/5's faulty allocators) and the resulting structure was very heavy on the RAM usage. This approach, while doable in theory, was subsequently scrapped.
+		
+		<h3>A visit from the Hat Man</h3>
+		The answer came to me in a dream: Instead of treating the explosion as one single task that demands one underlying structure, such as the branching stars or polyhedra from the previous attempts, the new explosion would simply subdivide the affected area and process it bit by bit.<br>
+		The original idea is as follows: The explosion acts like the Mk5, but the ray checks are confined to a smaller area (for example, a 16x16x16 subchunk). Consequently, the amount of rays needed is relatively low. After the affected blocks in the area are calculated, the system would take note on what edges of the area have rays that intend to pass them, since only a resolution of one ray per block is needed, this means that each subchunk would be divided into 6 sides with 256 blocks each where rays may leave, so the strongest ray passing through any given edge block is taken and its remaining strength is stored.<br>
+		If any side of the subchunk has at least one ray reaching the edge, this means that the explosion has to proceed in that direction. The system thus expands similarly to a flood-fill algorithm, where cells are processed which finally triggers its neighbors to also be processed. In order to proceed, the next subchunk creates more rays, however while they start with the original center's direction, they are offset so that they are once again confined within their respective subchunk, and only as dense as the subchunk demands it. This, in theory, means that all subchunks processed have a more or less equal density in regards to rays.<br>
+		While the subchunks affected by the explosion expand in all directions, and therefore scale cubically, after they hit the build height limit, expansion resumes in a <i>quadratic</i> fashion, which means once bombs become strong enough to hit the build limit, their computational cost actually scales more slowly. This is good news, since small to medium sized nukes are already pretty fast under the Mk5, but it's the stronger nukes that scale exceedingly poorly.
+		
+		<h3>Is this as good as it gets?</h3>
+		Until recently, these were the plans intended for the Mk6. However, there is yet another concern that comes up with larger nukes: Chunkloading. Once nukes are larger than the loaded chunk area, they will have to resort to forcefully loading the chunks themselves. What's worse is that if affected chunks have never been loaded before, they have to be generated first, a process with is notoriously sluggish and one of the main issues the Tsar Bomb has to fight with. In theory, the fact that now both allocation and processing is done as batched chunk operations already make the Mk6 better in this regard (vs the Mk5 which loads chunks many, many times during allocation and only batches processing), however we can do one better.
+		
+		<h3>Now we're cooking</h3>
+		What if we just don't process these chunks at all? After all, since they are not loaded, they are none of our concern, the player is literally unable to interact with or even see unloaded chunks. But we can't just leave the unprocessed, that would mean explosions are fundamentally limited by loaded chunks, and consequently creates sharp edges around the incomplete craters. Instead, we can simply take the information created by the last loaded chunk at the border which has been processed (since compared to the previous iterations, the data is relatively light-weight), cache it, and once the chunk actually loads in, resume processing. This means that the explosion is technically not done until players have loaded all affected chunks themselves, practically however this is not an issue, since in order to even matter whether a chunk has been wrecked or not, a player needs to be present to perceive it. Does a tree falling over make a sound when no one is listening? They do, but with nobody around, the sound doesn't matter.<br>
+		There's also a concern over whether chunkloading becomes sluggish if every chunkload in the affected area is immediately followed by the chunk being decimated, although due to how much faster the Mk6 is in general, it's unlikely that the impact this has is that big. And even if it was, it only extends to chunks which have been affected by the explosion, and clears as soon as that chunk has been processed. In any case, the result is most likely preferable over the internal server grinding to a halt because of hundreds of chunks being freshly generated at once, repeatedly loaded and unloaded due to the allocation and subsequently deleted despite nobody being there to perceive the change.
+		
+		<h3>Conclusion</h3>
+		yes
+		
+	</div>
+
+	<a href="../index.html">&lt; where's the door </a>
+</div>
+
+</body>
+</html>
