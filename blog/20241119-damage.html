@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bobcat's Blog</title>
+<link href="../common.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+<div class="content">
+	<h1 style="text-align:center;">Bombcat's Bug</h1>
+	<div class="blog-entry">
+	
+		<h3>From a snowball to an averlanche</h3>
+		One of the major points of the gun rework was a general rebalance, and consequently, armors will have to be rebalanced too, after all damage created by guns and damage prevented by armor are closely tied together (fucking obviously). In the very early stages there was no trouble, the plan was to simply ramp up the gun damage in a somewhat linear fashion and then balance the armors around that using the current FSB (full set bonus) damage reduction system. However, just before the first guns were actually being implemented, the decision was made to revive the old armor piercing idea, the old gun system in theory had the infrastructure for "armor piercing values" but no handling attached to that. As it turns out, having damage pierce armor poses quite a lot of problems.
+		
+		<h3>Just have the damage go through the armor, what are you, stupid?</h3>
+		If all you want is for damage to go through armor then that's quite easy, if your bullet has a damage piercing value of 15%, then simply apply 85% of the damage like normal, being subject to resistances and all, and then deal the remaining 15% either with the "ignore armor" flag or as a "set health" operation which bypasses everything. Simple enough and works exceedingly well, so well in fact that it bypasses <b>everything.</b> Straight to the point where someone in DNT power armor could die to just a few shots with FMJ 9mm rounds, each hit chipping away half a heart or so. Do you see the problem?
+		
+		<h3>Doing stuff and not thinking</h3>
+		The first approach at implementing proper armor pen took a bit of a hacky approach but was intended to work with pretty much any weird damage handling any modded armor could throw at it:
+		<ol>
+			<li>Take the base damage, and feed it into forge's damage calc event instead of doing damage outright. Whatever handling happens on the side of the armor, for example for NTM's FSB armors, will yield the appropriate amount of damage that should go through.</li>
+			<li>Subtract the modified damage from the base damage, this yields the amount of damage that was decreased by the armor</li>
+			<li>Multiply the removed damage by the armor pen percentage, this yields the amount of damage that was affected by armor, but should pen anyway</li>
+			<li>Then, add together the modified damage from the first calculation with the amount of damage that should pen from the previous step, and deal this much damage with the "ignore armor" flag so that the armor calculation doesn't apply (as we already did that ourselves)</li>
+			<li>Finally, realize that this was just a more complicated way of dealing some damage that is affected by armor and some that isn't, with all the aforementioned issues. Fuck.</li>
+		</ol>
+		For reasons we literally just went over, this idea was quickly abandoned.
+		
+		<h3>But can we salvage this?</h3>
+		One band-aid fix for this system would have included "armor rating", an armor was rated for a specific material (i.e. whatever the armor is made out of), and bullets are also rated for a material (i.e. whatever they can penetrate), so if an armor was rated higher than the bullet trying to penetrate, the bulet would fail and not include the pen percentage. This would, at the very least, prevent cases where earlygame ammo could kill people in lategame armor, however since other mods' armor sets do not have such a rating, to some extent that would still be an issue.
+		
+		<h3>How about we abandon vanilla's damage system entirely?</h3>
+		When I talked to Martin about this problem, he came up with an interesting point, instead of using vanilla's weird implementation for damage handling and then doing gymnastics around it for it to somewhat work, how about we introduce our own system, where vanilla damage resistance is still considered, but for the purpose of guns and NTM armor sets there would be a separate list of common damage types and sets would have resistances for those types. To fix any issues with other mods' armor sets, we can simply provide a way for people to configure resistance values themselves, so any modpack can tweak what armors are how powerful. In addition, NTM could provide its own list of resistances to some other mods' armor sets by default.
+		
+		<h3>Now what?</h3>
+		Resistances in NTM's current system have multiple parts, one such part is a list of damage multipliers, either for damage in general, for categories of damage (explosive, fire, projectile) or specific damage types (bullets, being on fire, standing in lava, etc). The other part, called "damage threshold", was largely inspired by Fallout New Vegas' damage system by the same name (although FNV <i>only</i> handles damage with DT), which is a simple flat subtractor to all incoming damage, i.e. damage lower than the DT would simply not register.<br>
+		The new damage system with its pre-defined list of common damage types assigned to both armor resistances and projectiles would have sort of resembled Techguns' system, where every armor set has a set percentage for resistance for each type. However in NTM's case, resistance percentages alone would not work, since low-tier ammo is expected to bounce off high tier armor, instead of dealing chip damage.
+		
+		<h3>When in doubt, rip off Factorio</h3>
+		The solution is quite simple, and did not occur to me until I figured out how Factorio's damage system worked when playing Factorio Space Age: Similar to our new system, there's just a small selection of common damage types, however the notation for resistances was DT/DR% - i.e. every damage type has its <i>own</i> damage threshold in addition to the damage resistance we are used to. In Factorio for example, this is that causes huge asteroids to be resistant to anything short of a railgun, but once you have the sufficient damage of a railgun, they are quire vulnerable, meanwhile for every damage type that isn't physical damage, it uses a resistance value of either 99 or 100%, basically full immunity to anything else. And something like this is pretty much what we want for the DNT nano suit, full immunity to most damage types and a high bar for very specific ones.
+		
+		<h3>Verdict</h3>
+		The new damage system to be used by both guns and armor would look like so:
+		<ul>
+			<li>Armor sets would still have bonuses for full sets which apply to either all damage or damage groups, so they still work against vanilla and other mods' threats.</li>
+			<li>Armor sets would also come with a list of resistances using our new damage model, if the incoming damage type matches one of the resistances, we ignore the general modifiers and use the specific ones instead. Damage types would be defined with both damage threshold (subtractor) and damage resistance (multiplier) values, which gives us a lot of wiggleroom.</li>
+			<li>Due to DT, ammo has to have at least enough DT penetration power to overcome the armor's DT before it can reduce the armor's DR with its own penetration multiplier. While on the surface this system is quite similar to the scrapped "armor rating" idea, it does give us more values to play with: We could have rounds that are stopped easily, but if they pen they absolutely shred armor, or we could have rounds that are hard to stop but only apply a small armor piercing damage bonus.</li>
+			<li>Armor stats would no longer be hardcoded into armor pieces, instead they could be modified via config. Whether parts still use the "full set bonus" model or if individual parts could provide individual bonuses is still in the air, but the fact that the system is configurable means that any compatibility issues are practically solved.</li>
+		</ul>
+		
+	</div>
+
+	<a href="../index.html">&lt; astra la visa, beyblade</a>
+</div>
+
+</body>
+</html>
