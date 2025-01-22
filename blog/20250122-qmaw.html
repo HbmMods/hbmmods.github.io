@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bobcat's Blog</title>
+<link href="../common.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+<div class="content">
+	<h1 style="text-align:center;">Blopat's Bmog</h1>
+	<div class="blog-entry">
+	
+		<h3>How to get information in people's heads, or: How I stopped worrying and started loving plain text</h3>
+		Documentation is quite important. No shit. People need to figure out how to do things, and many parts of NTM are not entirely intuitive, and even those parts that are, the whole concept is rather subjective. Either way, the mod needs a way of informing people about things they ought to know. For these purposes, we have a <a href="https://nucleartech.wiki/wiki/Main_Page">wiki</a> now. And while I am grateful for all the contributions, as well as having a place for in-depth info in an aesthetically pleasing format, for some purposes it's not exactly optimal either:
+		<ul>
+			<li>The wiki is entirely separate from the mod and requires an internet connection. Now this isn't a problem for most people, but tabbing out of the game and running a browser may not be desirable for low-end hardware, and sometimes people play without internet connection, so being entirely dependent on one is a hurdle in these instances</li>
+			<li>Should the server that hosts the wiki go down for whichever reason, the mod's now without documentation</li>
+			<li>Wiki pages are quite comprehensive, which means some important information may be buried on a page with things that can easily be found out by other means (like recipes in NEI)</li>
+		</ul>
+		All this doesn't mean the wiki is bad, quite the opposite, but it fulfills a certain role, and doesn't entirely replace built-in documentation.
+		
+		<h3>In the beginning</h3>
+		In the dark ages, before the NEI handler was invented, people somehow had to figure out what red copper was and how to make it. For this very purpose, NTM got a "guide" book block which would give the player written vanilla books with some info in them. <i>Immediately,</i> the issues with this became more than apparent:
+		<ul>
+			<li>The GUI is small with big letters, so the amount of content per page is limited</li>
+			<li>Navigating a book sucks, there's two buttons for turning pages, people had to manually flip pages until they found what they wanted</li>
+			<li>The actual information was mostly useless, because I am an idiot</li>
+			<li>Making books <i>sucks,</i> books stopped getting updates relatively quickly</li>
+		</ul>
+		
+		<h3>The common denominator</h3>
+		The next best approach was simply to add information to the items themselves via tooltip. For the most part, this is a great system, since it combines the items themselves with their documentation. however, the main issue with this approach is that the amount of info in tooltips is limited, so for more complicated things that demand multiple fully sentences worth of explanation, while it was still possible, the tooltip ended up ugly and in some cases would be unreadable due to it extending out the screen. Tooltips for more minor things are still great, and are widely used today, but for proper documentation purposes, they are lacking.
+		
+		<h3>Books: The Return</h3>
+		Which brings us back to books, but not the vanilla kind, but custom manuals. A new system was made, allowing nicer formatting, smaller fonts, and even images. Books still relied on page turning for navigation, but with easy to recognize images and large headers, this was substantially less of a problem than before. However, the new manuals were still not ideal:
+		<ul>
+			<li>Due to being actual items again, to read a manual, the player would actually have to own a copy</li>
+			<li>Grabbing a manual and opening it, while not exactly difficult, is still by far not as convenient as hitting a button like one would with NEI</li>
+			<li>Manuals require extensive setup for defining a new book, defining the amount of pages, the images, where the images are located, et cetera</li>
+			<li>Writing a manual includes changes to a bunch of files, including an overly bloated, cumbersome to navigate central .lang file which is what allows translations to work in the first place</li>
+		</ul>
+		While once again a neat system for certain cases, the overall issue was more on the developer than it was on the player. Manuals can be as great as they want, but they are of very little use when nobody wants to write one.
+		
+		<h3>World In A Jar</h3>
+		The world in a jar system is a direct port of Create's ponder system, simply hit a button while hovering over an item, and the game shows an animated demonstration of the object in question. While this is great visually, this largely suffered from some of the same problems as the prior systems:
+		<ul>
+			<li>Navigating through a WIAJ demonstration can be rather annoying if you're only looking for a single detail, sometimes it involves watching several 10 second sequences back and forth since while there is a button for skipping though "chapters", it's not obvious what part of the demonstration contains the desired information</li>
+			<li>Creating a WIAJ script is <i>very</i> time-consuming. A simple script takes about an hour to write, and each new "actor" (i.e. things like rendered tile entities) need to be defined in code, which is especially cumbersome when the actor needs to be animated (like rotation of stirling engines). In addition, once again the creation of a script involves multiple files that need to be edited, the script itself, any new custom actors, the rendering for new tile entities, and the .lang files.</li>
+		</ul>
+		While still a great system, it's only really necessary to have visual guides like that for a small amount of things, and even then, the system's usefulness is hindered largely by the fact that it's so time-consuming to use.
+		
+		<h3>The bottom line</h3>
+		So, after enduring this boring history lesson, what can we learn? (here comes yet another list oh boy I love lists)
+		<ol>
+			<li>Information should be available at the press of a button, or less. It shouldn't require dedicated items which need to be obtained and carried around</li>
+			<li>Pages need to be easy to navigate and search for</li>
+			<li>Pages need enough space to explain all relevant points, while still being short and concise</li>
+			<li>Images or visual representations are often times not even necessary, many times the point can be conveyed with just three short sentences</li>
+			<li>The system can be complicated, but the actual manuals need to be as easy to make as possible. The less friction there is between new manual pages and developers, the more likely it is for pages to be written to begin with.</li>
+			<li>Ideally, since pages are just game assets, they should also be subject to resource pack rules, i.e. packs should relatively easily be able to add and change pages</li>
+		</ol>
+		
+		The end result would be a system that shows very simple text at the push of a button, in large letters to support all GUI scales (item manuals had issues with cyrillic characters on lower resolutions), but scrollable pages to support any amount of text. A search feature is not even necessary, since people can simply look up an item in NEI and then go to the documentation. However, while reading pages, it may be easier to have a way to directly jump to related pages, for which the system should support HTML-style hyperlinks. The pages themselves would be defined via JSON file, defining a small amount of metadata (internal page name, icon) as well as text in multiple languages. JSON files are not registered, the system simply scans the manual folders and then automatically detects and assembles manual pages based on what it finds.
+		
+		<h3>QMAW</h3>
+		<i>Quick Manual And Wiki</i> does pretty much all that. The system is currently being implemented, and resource loading is almost complete. The resulting system reminds me a lot about Teletext (for anyone who doesn't remember, it's like the internet before we had the internet, but it's non-interactive pages on TV): simple pages, simple formatting, simple navigation. Information boiled down to the essentials, anything more fancy can be done via the online wiki.
+		<br><br>
+		The actual formatting of manual pages would be comparatively simple, mostly plain text with links going to related pages (similar to inline links as seen on other wikis). General navigation could be nice, but is likely not even needed. Writing a page would be equally simple, since the formatting is limited, there's only a small amount of easy to parse formatting codes (for links and text styles) that are necessary. Creating a new page is as simple as copy pasting an existing page file, then writing over the page's body. As explained earlier, the greatest weakness of the previous systems was maintenance, the harder it is to add new info, the less likely info will be added, the less likely players end up benefiting from that info.
+		<br><br>
+		This system is also interesting for pack makers: Any changes in NTM from a configured modpack can be reflected by the manuals, and the manuals don't just extend to NTM items, a resource pack can also add info to any other item. This means a pack can provide full documentation coverage for everything using one unified system.
+		
+	</div>
+
+	<a href="../index.html">&lt; oute, i got to get oute</a>
+</div>
+
+</body>
+</html>
