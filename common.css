@@ -25,6 +25,13 @@ a:hover {
 	text-decoration: underline;
 }
 
+.return {
+	padding: 5px;
+	border-style: outset;
+	border-color: #FF8;
+	background-color: #444;
+}
+
 .content {
 	width: 1000px;
 	margin: auto;
