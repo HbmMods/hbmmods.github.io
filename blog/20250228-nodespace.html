@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bobcat's Blog</title>
+<link href="../common.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+
+<div class="content">
+	<h1 style="text-align:center;">Flopcat's Flog</h1>
+	<div class="blog-entry">
+	
+		<h3>More boring history lessons. This is becoming a pattern.</h3>
+		The year is 2015. NTM has recently gotten a nuclear reactor (uranium burning engine, more like it) and an electric furnace. Electricity is finally a concept that exists, so how do we get that electricity from the reactor to the furnace?<br><br>
+		The answer: Cable blocks. Obviously. But how do they work? The most basic way of moving energy is just by making blocks ask their neighbors if they would like to receive energy, and then send it over. Cables serve as little more than small energy buffers that propagate energy to neighbors. Energy grids were small, and cables usually not very long, so this approach...worked. Horribly, but work it did.<br><br>
+		Soon enough I realized that I had made a mistake, the power value for cable blocks was a static value, meaning all cables shared the same buffer value, meaning cables effectively acted as wireless energy spreaders. Great.
+		
+		<h3>Holy shit this sucks ass</h3>
+		After fixing that blunder, cables got more accurate, but at the same time had way less throughput, and power would "move" through cables at one block per tick, meaning sending had a noticable, albeit not terrible, delay. Which prompted the next, even more horrifying creation:
+		
+		<h3>The flood fill controlled energy transmission algorithm</h3>
+		Back in the day I considered it a marvel, as it was the largest piece of code I've written thus far that worked on the first try. In retrospect it was about the most vile, horrid way of solving the problem, but it worked for years with only minor lag issues and occasional crashes (heavy sarcasm).<br><br>
+		The heart of the flood fill system was one large recursive function that would iterate over neighboring cable blocks. For a flood fill to work, it has to know where it has been before, and while there are many elegant ways of doing that, I just chose the worst one: Cables had a cache where they would flip a boolean on or off depending on what "phase" of the flood fill it was in. Hence why transmission happened with two tacts: Every half a second, the sending machine would call the recusive function, and set all cables it detects to "on" or "off", alternating between these two. Only when the cables reverted back to "off" would the system also actually transfer power to receivers it detected nearby, which meant power was only transfered once per second. Really, the "on" and "off" tact-based system is kind of like the bucket tool in paint, to track its progress, it would replace a white canvas with black pixels, later it would go back and color the black canvas white again. Progress for the flood fill was also rather slow, for performance reasons, if a cable was not part of the previous flood fill operation, it was added to a cache, but the flood fill would stop, meaning for the first time the machine was loaded, it had a delay until it would start transmitting energy<br><br>
+		The logical consequence of doing this many block checks using recurisve functions are rather obvious: Adding more energy producing machines would lag the entire thing more, the block checks had a tendency to load chunks (which sounds cool until you realize it means loading a large number of chunks only for them to unload again immediately, over and over and over again), and that because of the recursive nature of the function, transmission distances were limited (if the stack exceeds a depth of ~1000, the game just crashes).<br>
+		At this point I would like to issue a formal apology to you, for making you read this shit.
+		
+		<h3>Enter the network</h3>
+		Surely there's an easier way of establishing a connection between machines other than using the most braindead and inefficient flood fill, right? The answer was relatively simple: A proper network. In this context, a network is an abstract object that "spans" over multiple cables which are connected, which then acts as the intermediate for all energy transfer related matters, instead of having to deal with 50,000 cables individually.<br><br>
+		The concept is simple: A cable keeps track of a network. If the cable is not part of a network, it will either check its neighbors for cables that have networks, or make a new one. If two cables touch but have different networks, the networks are joined together into one larger one. If a cable is destroyed, so is the entire network, but new networks will be created in its place immediately after.<br><br>
+		This is great for performance, since cables only really need to do one check when they are placed, and one when they are destroyed. Power producers can simply go up to the network and say, "here, energy", and the network will distribute it to any receivers that have subscribed to that network.<br><br>
+		An unintended side effect was that cable tile entities that unload did not actually get removed from the network, their "corpse" was still part of the net, and the network itself was unaffected. This means that, as long as endpoints remained loaded, power could flow, even if chunks between endpoints were unloaded. While this meant that entire tile entity instances which were considered "dead" still lingered in memory, they were rather lightweight, and the bug was canonized as a feature.<br><br>
+		One issue however was the network destruction process, breaking a cable destroys its entire network, as it expects the network to correctly rebuild after. However, with many cables not being loaded, the network would be shattered. To solve this, the "re-eval" system was born, one of the most corrosive pieces of code I have ever written. Tile entities were thrown into a hash map, with the position being used for the hash value, and once a network was destroyed, an artificial "re-eval" rebuild process was started, where instead of naturally connecting, cables would find their previous neighbor based on hash, effectively bypassing the world and the concept of loaded chunks entirely. This system worked, for the most part, but was incredibly hacky.<br>
+		Soon enough the cracks in the power net started to show, CPU time per update increased with the rate of providers times subscribers, and since most people only had one power grid with many machines in them, each new machine added would increase the CPU load exponentially until larger bases started tanking TPS.
+		
+		<h3>Nodespace: The imaginary cable dimension</h3>
+		The fix for the performance issue was reworking the way transfers happened. Instead of having every consumer tick, send their power to the network and then have the network iterate over each and every connected consumer, every time, the network itself would take care of both getting the power from all providers and distributing it to the subscribers.<br>
+		However, there was another issue I intended to fix: Re-eval. The system worked, but had some issues, and overall was quite cancerous to work with. After some tinkering, I found a concept that would do the job rather nicely: Nodespace.<br><br>
+		Nodepsace is basically an "imaginary" dimension that keeps track of "power nodes", basically representations of the cables. Whether a chunk is loaded or not is entirely irrelevant, if a cable is placed, it creates a node at that position, if it is removed, the node is also destroyed. If the cable unloads, the node remains, if the cable loads back in again, instead of having a zombie tile entity and a real tile entity as part of the network, the cable simply checks if there already exists a node in that space. Zombie tile entities used to be known as "energy voids", since zombie subscribers would suck up energy without ever becoming full, without ever actually filling the real tile entity, since it no longer exists.<br><br>
+		Having nodes completely separate like that also meant the actual power nets weren't so deeply intertwined with the cables themselves, meaning the code was easier to work with which was an excellent condition for the new transfer code.<br><br>
+		The new transfer code is relatively simple: It iterates over each provider and consumer once to figure out how much energy needs to be transfered, then makes even cuts for both sides, and finally iterates over each part again to add/remove energy. The time requirement became (P+S)*2 instead of P*S, which especially in huge bases makes an enormous difference.
+		
+		<h3>UNINOS: Nodespace for you and me</h3>
+		(i'll write this later i'm tired as fuck man)
+		
+	</div>
+
+	<br>
+	<a class="return" href="../index.html">&lt; i've seen enough</a>
+</div>
+
+</body>
+</html>
