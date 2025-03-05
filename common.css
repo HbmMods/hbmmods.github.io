@@ -32,6 +32,16 @@ a:hover {
 	background-color: #444;
 }
 
+.cookies {
+	width: 100%;
+	background-color: #777;
+	border-style: outset;
+	border-color: #aaa;
+	text-align:center;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
 .content {
 	width: 1000px;
 	margin: auto;
