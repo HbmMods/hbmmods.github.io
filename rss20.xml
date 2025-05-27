@@ -1,0 +1,16 @@
+<rss version="2.0">
+	<channel>
+		<title>Bobcat's Blog</title>
+		<link>https://hbmmods.github.io/</link>
+		<language>en</language>
+		<description>Bobcat's Blog - https://hbmmods.github.io/</description>
+		
+		<item>
+			<title>Making of: Trenchmaster</title>
+			<link>https://hbmmods.github.io/blog/20250420-trenchmaster.html</link>
+			<description>The story of how our favorite war criminal was made.</desription>
+			<pubDate>Sun, 20 April 2025</pubDate>
+		</item>
+		
+	</channel>
+</rss>
