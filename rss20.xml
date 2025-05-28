@@ -7,6 +7,7 @@
 		
 		<item>
 			<title>Making of: Trenchmaster</title>
+			<guid>https://hbmmods.github.io/blog/20250420-trenchmaster.html</guid>
 			<link>https://hbmmods.github.io/blog/20250420-trenchmaster.html</link>
 			<description>The story of how our favorite war criminal was made.</description>
 			<pubDate>2025-04-20</pubDate>
@@ -14,6 +15,7 @@
 		
 		<item>
 			<title>Nodespace</title>
+			<guid>https://hbmmods.github.io/blog/20250228-nodespace.html</guid>
 			<link>https://hbmmods.github.io/blog/20250228-nodespace.html</link>
 			<description>The arcane art of connecting two things. Sometimes more.</description>
 			<pubDate>2025-02-28</pubDate>
@@ -21,6 +23,7 @@
 		
 		<item>
 			<title>Getting info in people's heads</title>
+			<guid>https://hbmmods.github.io/blog/20250122-qmaw.html</guid>
 			<link>https://hbmmods.github.io/blog/20250122-qmaw.html</link>
 			<description>Documentation: Everyone loves having it, few people love making it. The history of NTM's attempts at documentation, as well as the upcoming QMAW system.</description>
 			<pubDate>2025-01-22</pubDate>
@@ -28,6 +31,7 @@
 		
 		<item>
 			<title>How to handle (emotional) damage</title>
+			<guid>https://hbmmods.github.io/blog/20241119-damage.html</guid>
 			<link>https://hbmmods.github.io/blog/20241119-damage.html</link>
 			<description>Minecraft's damage system sucks, and in order for guns to work properly we'll have to come up with something better.</description>
 			<pubDate>2024-11-19</pubDate>
@@ -35,6 +39,7 @@
 		
 		<item>
 			<title>Mark 6</title>
+			<guid>https://hbmmods.github.io/blog/20241115-mk6.html</guid>
 			<link>https://hbmmods.github.io/blog/20241115-mk6.html</link>
 			<description>The hat man came to me in my dreams and showed me how to make bombs even better.</description>
 			<pubDate>2024-11-15</pubDate>
@@ -42,6 +47,7 @@
 		
 		<item>
 			<title>Enemy Desing</title>
+			<guid>https://hbmmods.github.io/blog/20241018-enemy.html</guid>
 			<link>https://hbmmods.github.io/blog/20241018-enemy.html</link>
 			<description>We got guns, now what do we shoot with them?</description>
 			<pubDate>2024-10-18</pubDate>
@@ -49,6 +55,7 @@
 		
 		<item>
 			<title>INDEX</title>
+			<guid>https://hbmmods.github.io/blog/20240913-index.html</guid>
 			<link>https://hbmmods.github.io/blog/20240913-index.html</link>
 			<description>The story of Redstone-over-Radio, and some of its future capabilities.</description>
 			<pubDate>2024-09-13</pubDate>
@@ -56,6 +63,7 @@
 		
 		<item>
 			<title>The NTM Design Bibble</title>
+			<guid>https://hbmmods.github.io/blog/20240816-bibble.html</guid>
 			<link>https://hbmmods.github.io/blog/20240816-bibble.html</link>
 			<description>NTM has (loosely) followed some design principles for the better part of its development, in today's yapping session we go over some of them.</description>
 			<pubDate>2024-08-16</pubDate>
@@ -63,6 +71,7 @@
 		
 		<item>
 			<title>Guns! Guns! Guns!</title>
+			<guid>https://hbmmods.github.io/blog/20240715-guns.html</guid>
 			<link>https://hbmmods.github.io/blog/20240715-guns.html</link>
 			<description>More boring yapping about how guns worked, and how they could be better.</description>
 			<pubDate>2024-07-15</pubDate>
@@ -70,6 +79,7 @@
 		
 		<item>
 			<title>The History Of Things That Go Boom</title>
+			<guid>https://hbmmods.github.io/blog/20240705-algorithm.html</guid>
 			<link>https://hbmmods.github.io/blog/20240705-algorithm.html</link>
 			<description>A little history lesson on how nuclear explosions worked, and what we can expect in the near future.</description>
 			<pubDate>2024-07-05</pubDate>
@@ -77,6 +87,7 @@
 		
 		<item>
 			<title>In The Matters Of Bedrock Ores</title>
+			<guid>https://hbmmods.github.io/blog/20240704-bedrock.html</guid>
 			<link>https://hbmmods.github.io/blog/20240704-bedrock.html</link>
 			<description>Bedrock ores are kinda dumb if you think about it - too many types, too much maximum yield, nether ores being horrendous, too little processing variety...what do?</description>
 			<pubDate>2024-07-04</pubDate>
