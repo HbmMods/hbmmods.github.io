@@ -6,6 +6,14 @@
 		<description>Bobcat's Blog - https://hbmmods.github.io/</description>
 		
 		<item>
+			<title>In the trenches</title>
+			<guid>https://hbmmods.github.io/blog/20250530-trenches.html</guid>
+			<link>https://hbmmods.github.io/blog/20250530-trenches.html</link>
+			<description>World gen schenanigans and structure pain.</description>
+			<pubDate>2025-05-30</pubDate>
+		</item>
+		
+		<item>
 			<title>Making of: Trenchmaster</title>
 			<guid>https://hbmmods.github.io/blog/20250420-trenchmaster.html</guid>
 			<link>https://hbmmods.github.io/blog/20250420-trenchmaster.html</link>

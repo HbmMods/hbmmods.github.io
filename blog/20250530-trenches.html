@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bobcat's Blog</title>
+<link href="../common.css" rel="stylesheet" type="text/css">
+<link rel="icon" type="image/png" href="/img/favicon.png">
+</head>
+
+<body>
+
+<div class="content">
+	<h1 style="text-align:center;">Blogcat's Bob</h1>
+	<div class="blog-entry">
+
+        <h3>If you still remember</h3>
+        <a href="blog/20241018-enemy.html">An eternity ago</a> I wrote a blog post about enemy design, with some going over additions to glyphids. While not much has come of it just yet, the idea of changing glyphids in some fundamental way stuck. Right now, they generate these unsightly blobs all over the place, with the density being not all that meaningful - if you clear out nearby nests early on, they will never be an issue.<br><br>
+        This gave me an idea, what if instead of having glyphid hives all over the place, why not have a dedicated biome where they spawn with some actual density? But there would have to be an incentive for players to go there, and ideally to build an outpost there too. Higher bedrock ore yields? A new resource? Who knows.
+        
+        <h3>And now: Landmines</h3>
+        Right around the same time, someone brought up the possibility of having landmines spawn less frequently, but having mine fields as part of world gen. This would concentrate the danger, causing fewer random explosions in supposed safe areas, and provide a challenge if people wanted to go there, for whatever reason. While probably incredibly easy to implement, this idea too didn't really go anywhere yet, mostly because I haven't bothered to figure out a proper reward yet. Mines aren't a persistent threat, once detonated or defused they are out of the picture and do not respawn, so it's harder to come up with something compared to a glyphid biome.
+        
+        <h3>Zomblets</h3>
+        A few months ago I added undead soldiers. Mostly to have a proper enemy that could use guns, rather than just pollution-dependant skeletons. While still incredibly primitive, the mobs do work, so what to do with them? Their current utility is to guard spire structures which hold pieces for the Aberrator, but I feel like we aren't using them to the fullest potential just yet.<br><br>
+        The armor worn by the soldiers is "Taurun armor", which is a bit of mostly unused lore sprinkled over there. Which begs the question, if we had a second nation's armor set, could we have the undead soldiers fight each other? To create a proper warzone?
+        
+        <h3>The scumlands</h3>
+        And that's where the no man's land biome comes into play. A permanently hazardous area with factions of soldiers locked in an eternal stalemate. The landscape is flat, mostly petrified and blasted to hell, with trenches all over the place. Duds, which right now are sort of common, would become rare, while being abundant in no man's land. Barbed wire, landmines and the occasional artillery strike would complete the picture.<br><br>
+        By hacking together some of the previous ideas with a ton of stuff we already have, we can now accurately simulate what hell is like:
+
+		<img src="../img/20250530-01.png" class="blog-entry-image" style="margin-top: 40px; margin-bottom: 40px;" />
+		<img src="../img/20250530-02.png" class="blog-entry-image" style="margin-top: 40px; margin-bottom: 40px;" />
+		
+		These are screenshots of NTM's experimental branch. The landscape is currently rather uninteresting, there's no mines (addendum: I just noticed one of the random mines happened to spawn in one of the pictures, lmao) or barbed wires, dead trees or bombed out buildings. The trenches are unfinished, but the concept does work for the most part. And you will find there's no mobs constantly blasting each other, the second faction does not exist yet.<br><br>
+		There's currently some issues with the structure generation that need to be ironed out, and the entire thing isn't high priority which is why it's fermenting on another development branch, but I am more than confident that it will work.
+		
+	</div>
+
+	<br>
+	<a class="return" href="../index.html">&lt; i'm leaving, googbye</a>
+</div>
+
+</body>
+</html>
