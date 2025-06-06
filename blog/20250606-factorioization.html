@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bobcat's Blog</title>
+<link href="../common.css" rel="stylesheet" type="text/css">
+<link rel="icon" type="image/png" href="/img/favicon.png">
+</head>
+
+<body>
+
+<div class="content">
+	<h1 style="text-align:center;">Blogcat's Bob</h1>
+	<div class="blog-entry">
+
+        <h3>All about crabs</h3>
+        Carcinization is the phenomenon where many species of crustaceans have independently evolved into a crablike bodyplan. Something about the crab body is so advantageous that many things that aren't crabs, end up being just like crabs.
+        
+        <h3>And now for something completely different</h3>
+        In the year of our lord 2017 I have played Factorio for the first time. Not for very long, nor was I good at it, and I didn't pick it back up until years later, but I did manage to get a taste of some of the machines. NTM at that point has no actual automation to speak of, and most machines were made in the crafting table, using microcrafting items also made in a crafting table. Yawn. Playing Factorio gave me the idea of larger, and most importantly universal crafting machines that can combine way more items into an output, and receive items automatically.
+        
+        <h3>The Assembler</h3>
+        Recipes can be ambiguous. In order to craft something, a machine needs to know what it needs to make, so it needs a way to figure that out. No shit.<br><br>For crafting tables that's sort of simple, it just iterates over the entire list of recipes, compensates for mirroring and offsets and then tries to find the first recipe that matches the grid. That's good enough for a manual crafting station where the player deliberately places items into specific slots and where recipes are only checked once every time the slots change, but for automatic machines that's a bit of a clumsy approach, mostly due to there not being any "shape" that determines where what item should land from IO. Vanilla Minecraft later ended up "solving" this with their autocrafter, which is horribly clumsy to use and has absolutely atrocious throughput when using an item sequencer for more complex recipes.<br><br>NTM's assembler therefore needed a way to choose a recipe. I wasn't very good at doing GUIs at the time and I just so barely understood network packets, so the easiest to execute solution I came up with was the template folder, an item that acts as a recipe selector which would simply scribble the recipe down on a sheet of paper, which could then be inserted into a machine to tell it what to do. Simple enough.
+        
+		<img src="../img/20250606-01.png" class="blog-entry-image" style="margin-top: 40px; margin-bottom: 40px;" />
+		
+		That's a ton of wasted space right here, you could fit like twice the recipe per page if you wanted.
+        
+        <h3>And then it all fell the fuck apart</h3>
+        The system worked, and that's about all it did. What it did <i>not</i> do was work well, or be convenient. Every recipe change needed a template, needed the template folder in hand, needed paper and dye, needed enough space in the inventory. Often times templates only had to be used once or only on few occasions, so they either got shoved into crates full of nothing but templates, or outright scrapped. The only actual purpose templates could serve beyond recipe selection was <i>automated</i> recipe selection: When sent through a template crate (usually or AE2 autocrafting), the assembler would automatically choose that template, and then eject it again after one crafting cycle. This however is a weird edge case that barey works for most people so it's not exactly a great tradeoff.
+        
+        <h3>You have selected: Mister Thrill</h3>
+        Back in 2021 I made the anvil which works quite similarly to the anvil in Terraria: A recipe list you get to choose from, ingredients are taken directly from the inventory and the output is spat at the placer. Shrimple enough, selection logic was mostly just reimplemented from the template folder, and the selector was built directly into the anvil GUI. Since the anvil's construction section has no need for slots, there was ample space for that.<br><br>About half a year ago, not long before the gun update was released, I finally had to rip off the bandaid that was redoing ammo production. I wanted an ammo press, but the three slot design I had in mind for ages just wouldn't work with the many, many edge cases. So I instead opted for a traditional 3x3 crafting grid with arbitrary stacksizes, and, once again, a recipe selector. The 3x3 grid + output slot don't need much space, so the selector got a whole 12 ammo types per page. Not a lot, but still pretty good.
+        
+        <h3>The reworkening</h3>
+        Reworks for the assembler and chemplants have been on the table for quite some time now, right about every aspect could use some improvements. The chemplant for example now has three input slots and three fluid inputs instead of four and two, which allows for a few new types of recipes. Of course, I did consider adding a recipe selector, although the chemplant's GUI is already so cramped that any attempt of adding it would end up either not working at all or looking hideously ugly.
+        
+        <h3>If you remember</h3>
+        Years ago, the electrolyzer was made. Yes we are going on another tangent, stay with me. The electrolyzer is really just two completely different machines in the same chassis, and therefore has two GUIs that can be switched though. Opening a GUI from another GUI is quite simple. So what if instead of adding a whole ass recipe selector within the GUI, we make a whole new window for it? But tht's a lot of work, making that many new GUIs, so what if we made the selection GUI generic so it can work with about any machine? What if we made the recipes <i>themselves</i> generic instead of reinventing the wheel every time? After all, most recipes can be described as items and fluids for input and output, a unique name, duration and power demand. Since I'm already rewriting the chemplant and assembler, why not just do that?
+        
+        <h3>Getting there</h3>
+        Instead of selling basic UI design as some sort of revelation (it is to me, I am very stupid), let me explain the changes: Instead of needing a template item (inconvenient) to define a recipe with arbitrary input of slots that aren't locked (may lead to overfilling, also permutation checks are laggy), we have a simple button that opens a selector with search bar and quick deselect option that locks the slots to their input, just like it does with the ammo press. And because especially in earlygame, people will use these machines by hand, there needs to be a way to tell them what item belongs where, so we just add a low opacity render of the required item and voila, recipe selection isn't shit anymore.
+        
+		<img src="../img/20250606-03.png" class="blog-entry-image" style="margin-top: 40px; margin-bottom: 40px;" />
+		<img src="../img/20250606-02.png" class="blog-entry-image" style="margin-top: 40px; margin-bottom: 40px;" />
+		
+		<h3>Oops</h3>
+		We've reinvented basically just what Factorio did, almost 1:1.
+		
+		<h3>So what do we learn</h3>
+		<ol>
+			<li>If we optimize hard enough, eventually we reach Factorio. These guys basically already perfected the genre.</li>
+			<li>I'm not smart.</li>
+		</ol>
+		
+	</div>
+
+	<br>
+	<a class="return" href="../index.html">&lt; where's the door</a>
+</div>
+
+</body>
+</html>
