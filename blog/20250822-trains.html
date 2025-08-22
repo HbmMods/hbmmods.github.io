@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bobcat's Blog</title>
+<link href="../common.css" rel="stylesheet" type="text/css">
+<link rel="icon" type="image/png" href="/img/favicon.png">
+</head>
+
+<body>
+
+<div class="content">
+	<h1 style="text-align:center;">Bongcat's Bop</h1>
+	<div class="blog-entry">
+
+        <h3>Minecat</h3>
+        Minecraft's minecarts are on a technical level not horribly complicated. There is a table that maps rail metadata to directions, minecarts try to snap to rails and only allow movement in those directions. If a curve is encountered, translate momentum so it goes in the newly chosen direction. If two carts "collide" (read: their bounding boxes intersect) then apply force on both carts in opposing directions. Simple. Too simple in fact.
+        
+        <ul>
+        	<li>Carts are small, should one move sufficiently fast (not possible on vanilla rails, but we don't do vanilla) then they can pass through each other without colliding.</li>
+        	<li>Carts don't actually support rotation. Based on a cart's "direction" it changes the angle it's rendered at, but it doesn't exactly keep track of what rotation it has. The logical consequence being that a cart that goes along a NS or EW rail will always have the same orientation, so on a circular track, a chest cart will seemingly rotate 180° when taking a turn every so often.</li>
+        	<li>Rails can only be one block large and only support four directions.</li>
+        	<li>Because of Mojang jank code, minecarts are often subject to desync, and depending on how they're placed may have weird vertical offsets.</li>
+        	<li>Mionecarts don't support multiple passengers.</li>
+        </ul>
+        
+        As you can see, this sucks ass.<sup>[1]</sup> If we want larger minecarts that are bigger, flashier, more functional and have actual usable rails then we need to come up with something different.
+        
+        <h3>Why don't we just reuse what we already have?</h3>
+		There's a simple idea, we already have rails, crap as they may be, and entities that follow them. Why can't we just take two minecarts, make one the "head" and the other the "tail", and make them move in tandem? The answer: We can! And it sucks!<sup>[2]</sup> Getting collisions to work in a manner that's not complete jank is a pain in the ass, and due to Minecraft's single block sized rails, it was possible to lock a train car in place by getting both bogies<sup>[3]</sup><sup>[4]</sup> on two parallel rails going different directions. It's like multi track drifting, except not cool at all.
+        
+        <h3>From Scratch<sup>[5]</sup></h3>
+        So now that we figured out that using anything related to vanilla just sucks ass, we can finally try to make a completely custom implementation. Wider rails, longer cars, longer cats, all the fucked up evil rail geometry that we want, and no one telling us what to do. So how hard can that be?
+        
+        <h3>Obvious punchline</h3>
+        The approach for rails was simple. Each type of rail has a function that has the position of the bogie in question, the angle of the entire train car, and the speed at which it moves, and all the rail has to do is return the next position based on that value. Or so I thought. Because of course, If a train moves at 100m/t and the rail is straight, doing just that would result the rail in saying "yeah man you just go 100m straight" completely ignoring the 15 turns and several flaming hoops. So the function needs an overshoot return value, so the train knows how much there's still to move within one tick after leaving that rail, so it has to ask the next rail. What next rail? Our function also needs to return a position where to check for whatever the next rail is, too. What about buffer stops? That breaks the initial assumption of "just move", we have to cut the train's motion short. Add that to the return values. A switch? Now we need to account for what <i>track</i> if a single rail multiblock the train is on, merge tracks depending on the heading of the train, or branch off, only using the selected path while ignoring the other one. A curve? Translate the change in position to a change in <i>angle</i> along the curve, then turn that into an exit position, revert back to a distance, subtract the moved distance from the total distance and keep track of the overshoot because we want to account for future rails too. Sounds simple on paper, but it kind of falls the fuck apart when it's a lot of weird ambiguous trig functions in conjunction with a train movement code where it's not clear whether it even works properly or not. Rail check type. What's that? We need to know which bogie we are checking, or if we are using the train car's core position for determining various things, although that means of the bogies are on a rail, which should be sufficient, but the core is not, then the train can no longer do the things it needs to do. Well we fucked up!
+        
+        <h3>Get on with it</h3>
+        All this is just <i>rails</i>. The trains themselves have a metric fuckton of logic attached to them to even move at all. Coupling has to work, of course, so we need to know what train car is the "head", and then move all cars in sequence one after another to account for buffer stops. Oops, forgot to account for reverse gear. Oops, forgot to account for trains being coupled in arbitrary orientation, gotta account for that too. Oops, entity ticking happens in an arbitrary order, so for the whole system to be in the order we need it in, we need to introduce a global train ticker that takes care of all the movement stuff.<sup>[6]</sup> And we aren't even getting into the nightmare that is train collisions. Train cars should ideally be able to push each other around, so we need proper collisions for that too. Entire linked trains need to behave the way you'd expect them to, trains hitting each other on switches from the side should derail, et cetera.
+		
+        <h3>This isn't even my final form</h3>
+        ...and that's just the progress that was made back then, those are the actual manageable parts. Because there's a whole onslaught of other crap that needs to be taken care of for the system to become usable. Trains would need some mechanism for automation, which means train signals (and I fucking hate signals), time tables (customization GUIs my behated) and waiting conditions, stations that work with any type of freight car (which either limits freight cars or turns the station model/animation into an actual nightmare), and worst of all, actual predictive pathfinding that works across potentially thousands of blocks and through unloaded chunks.
+		
+        <h3>And that's the bell</h3>
+        So that's basically where I threw the towel. Trains are just too big of a thing to make. Each part has to work and do so perfectly, and needs every other part to be properly tested. Testing one bugged piece of code isn't that bad, but it becomes an issue when you need to test 15 things simultaneously, and it's not really possible to tell where the issue comes from in the first place. That's when I put the plans for trains on ice, likely never to be thawed.
+		
+        <h3>But why can't you just</h3>
+        Trains could be realistic to actually make in some heavily restricted, cut down way. Instead of pathfinding, we could have color coding on every switch, and colored trains that just follow that path. Stations could just use a purpose-built redstone mechanism to decide how long to wait instead of a customizable time and condition table. Trains could just derail immediately when colliding.<br><br>Both Factorio and Satisfactory make some cuts like that, Factorio trains can't derail and simply blow one another up when colliding, Satisfactory trains will simply derail instead. Instead of multiple train variants and ones with more seats, we could just have one person per train car, and one universal set of trains, which would reduce the amount of models needed and the complexity of the stations.<br><br>While all that sounds reasonable, I feel like cutting back on the features so much, especially on the routing, would make trains simply not viable. Even with the cuts, it would still take a long time to implement them, so that's a lot of time wasted on something people aren't very likely going to use.
+		
+        <h3>Conclusion</h3>
+        Piss off. Go home. I need alcohol.<sup>[7]</sup>
+        
+		<br>
+		<br><sup>[1]</sup>Obviously
+		<br><sup>[2]</sup>I tried it
+		<br><sup>[3]</sup>That's one of the two parts on a train car with them wheels on em
+		<br><sup>[4]</sup>I figured out HTML sup, did you notice?
+		<br><sup>[5]</sup>The sabertooth squirrel from Ice Age
+		<br><sup>[6]</sup>The author is in pain
+		<br><sup>[7]</sup>Strongbow cider, the gay faggot ass pink one. The less it tastes like cleaning products the less likely I am to throw it back up
+		
+	</div>
+
+	<br>
+	<a class="return" href="../index.html">&lt; i have an idea, let's leave</a>
+</div>
+
+</body>
+</html>
