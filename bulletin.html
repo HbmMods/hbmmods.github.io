@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bobcat's Blog</title>
+<link href="common.css" rel="stylesheet" type="text/css">
+<link rel="icon" type="image/png" href="/img/favicon.png">
+</head>
+
+<body>
+
+<div class="content">
+	<h1 style="text-align:center;">Bobcat's Blog</h1>
+	<div class="blog-entry">
+	
+	<h2>Compatibility Bulletin</h2>
+	This list contains recent changes that need to be accounted for when updating, as well as removed features.
+	<hr>
+	
+	<h3>X5526</h3>
+	The multitool ("power fist") has been removed.
+	<br>
+	Explosions that used the old ZOMG projectiles (negative energy) now use a DFC blast instead.
+	
+	<h3>X5523</h3>
+	The fusion reactor has been replaced by a new one. Existing fusion reactors will continue to work, but their components as well as their blankets are now unobtainable. Legacy reactors will drop themselves instead of their components when broken, allowing them to be moved easily. Melting reactors also no longer disassemble, instead they just break entirely.
+	<br>
+	Ammo duping recipes using nitra have been removed, instead, nitra can be used to craft variants of the ammo container which yield less, but don't require an initiall ammo item to dupe.
+	<br>
+	NITAN chests have been removed. In their place, there's something arguably more useful now.
+	<br>
+	Legacy terra drills can no longer be crafted. They were replaced by the previously added powered drill.
+	<br>
+	Helium-4 can no longer be made from liquefacting ionized particles, it is instead sourced from the fusion reactor's recipe directly.
+	
+	<h3>X5490</h3>
+	Standard fluid identifiers which required a template folder to make and could only represent one type, have been removed. Fluid identification is now done solely though the multi identifier.
+	<br>
+	
+	
+	<h3>X5467</h3>
+	T-45 power armor has been replaced by T-51b. The recipes and stats were copied 1:1, in essence the T-51b is just a model change, however they are still separate items. Existing T-45s will continue to work for now.
+	
+	<h3>X5441</h3>
+	Heliostat mirror mechanics have changed. The maximum distance is now much higher, but mirrors can no longer be tilted more than 45°. A larger mirror surface therefore demands the boiler to be placed further up. This angle check is done when linking, already linked mirrors (i.e. existing setups) are unaffected and should continue working as normal.
+	
+	<h3>X5412</h3>
+	The new PUREX now handles depleted fuel recycling which was previously done by the centrifuge. The previous centrifuge recipes will no longer work, any automation setups require the centrifuges to be replaced. PUREX recipes usually also require nitric acid and kerosene in addition to the depleted fuel.
+	
+	<h3>X5397</h3>
+	The schrabidium transmutator has been deprecated. Remaining automation options include the MEP PUREX recipes (require schrabidic acid to start) and the exposure chamber (requires PA). Existing transmutators still work, but they can no longer be made.
+	<br>
+	Assemblers, like chemical plants, have gotten a replacement. These new machines no longer require templates, they feature a built-in recipe selector. The blueprint slot is used for certain non-standard recipes that can be found in structures. Existing assemblers will continue to work, but neither them nor their templates are obtainable anymore.
+	
+	</div>
+
+	<br>
+	<a class="return" href="index.html">&lt; let's head back</a>
+</div>
+
+</body>
+</html>

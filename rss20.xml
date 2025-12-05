@@ -6,6 +6,14 @@
 		<description>Bobcat's Blog - https://hbmmods.github.io/</description>
 		
 		<item>
+			<title>Compatibility Bulletin</title>
+			<guid>https://hbmmods.github.io/bulletin.html</guid>
+			<link>https://hbmmods.github.io/bulletin.html</link>
+			<description>The important things.</description>
+			<pubDate>2025-12-05</pubDate>
+		</item>
+		
+		<item>
 			<title>Fusion And The Things That Bind Us</title>
 			<guid>https://hbmmods.github.io/blog/20251024-fusion.html</guid>
 			<link>https://hbmmods.github.io/blog/20251024-fusion.html</link>
