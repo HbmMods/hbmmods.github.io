@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bobcat's Blog</title>
+<link href="../common.css" rel="stylesheet" type="text/css">
+<link rel="icon" type="image/png" href="/img/favicon.png">
+</head>
+
+<body>
+
+<div class="content">
+	<h1 style="text-align:center;">Cobbab's Blcg</h1>
+	<div class="blog-entry">
+	
+	<h3>The Meta</h3>
+	Since 2021, the RBMK has been the poster child of NTM. The big bad Chernobyl reactor, with a fully dynamic system, custom designs, a ton of components, ton of fuels, consoles, cranes and all sorts of decorative bits and bobs. Many people, for whatever reason, play the mod that's about nuclear reactors, and then don't want to build nuclear reactors. The meta for building an RBMK is universally
+	
+	<h3>The Shitbox</h3>
+	The shitbox is the name for every sub-compact reactor that's just a bunch of rods with very little care and thought spewed into some dank hole. The problem being, that this approach was comically viable, even with all the nerfs and attempts to prevent tiny horrible reactors from being usable. <i>Shotbox Prime</i> being an older design of the formerly self-igniting MEP fuel surrounded by four reflectors, which was capable of vomitting out a few MHE/s. MEP's self-ignition trait was removed, but with creative rod swapping techniques you could replicate that with any fuel, self-igniting or not. The shitbox has stayed the meta, which is weird considering actually designing reactors isn't hard ("designing" in heavy quotation marks, because for most purposes a simple grid with fuel rods, control rods and moderators works just fine), and RBMK columns aren't terribly expensive either. Lazyness always wins, I suppose.
+	
+	<h3>Initial Ideas</h3>
+	Making shitboxes useless has been on my laundry list for a while, and there had been a few ideas floating around. The one that I put the most thought into was a system where fuel rods interacting with one another would require a minimum amount of neighbors, or else they'd receive a debuff. A fuel channel with an effective neighbor count (ENC) of 3 or 4 would have full efficiency, a channel with only 2 would be 75%, one 50% and none would not react in any meaningful way at all, even with reflectors. The ENC value would be the actual neighbor count (ANC), i.e. the amount of all nieghboring fuel channels this channel would interact with, plus a bonus of 1 if one of the neighbors' ANC is higher than this rod's ANC. A shitbox with two rods would have two with an ENC of 1. A sub-compact 2x2 grid reactor would have four rods with an ENC of 2 each. Starting with 3x3 compact grids, all rods would have an ENC of 3 or higher - the innermost channel would have an ANC of 4, the four at the inner edges would have 3, and the ones in the corners only 2, but by neighboring the inner edge channels with 3, the <i>effective</i> neighbor count would be raised to 3, which means none of the fuel channels would get nerfed. This means that all reactor designs above a certain size would remian unaffected, but tiny shitboxes would be barely usable.
+	
+	<h3>And That's History</h3>
+	This change never came. There was never an opportunity to implement it, and its effectiveness was questionable, since it assumes that all "decent" reactors would use standard grids. Pointier, linear or other non-standard designs hadn't been considered, and could have been hit by the nerf, if implemented as planned. But recently, I got around making some changes to the RBMK's model and textures, so while I was already doing that, I just started making all the changes that I could remember wanting to do. After all, if we're already doing changes that affect and maybe even break existing designs, it's better to just make all changes at once, instead of breaking people's setups every other week.
+	
+	<h3>And First, Optics</h3>
+	The first change was the general design, RBMKs always had a very unique shape with the columns, and those indentations on  the sides. These indentations didn't actually do much for the actual reactor, since the sides are usually covered anyway, all they achieved was making the rendering way laggier due to side culling not being applicable with that shape. So the indentations went away and became part of the texture. Most RBMK columns now use very standard solid block rendering, and all the optimizations that come along with that. The cover panel TESR was removed, TESRs are kind of expensive and having to many would cause the game to omit rendering some (causing the rare invisible cover glitch). The lighting of the TESR also originated from the core block which is at the bottom, while the cap renders on top, which caused incorrect lighting. Using ISBRHs, the caps are now more performant, don't use up our TESR budget, and use the correct lighting from the topmost block.
+	<br>
+	As an added bonus, most parts got a new coat of paint. The caps especially, since they now look like shiny metal instead of the plain grey concrete tiles. Control rods got a bit of a makeover, with the top of the caps now reflecting the color of that rod's color group.
+	
+	<h3>When in Rome</h3>
+	Absorbers have always been quite useless. Their only purpose is blocking neutrons, which can be done with any other solid block, and for that purpose, absorbers were quite expensive. Worse yet, absorbers are affected by passive cooling, so having them was actually a downgrade compared to using much cheaper concrete, or even dirt. An ancient idea has finally been realized: If hit by neutrons, absorbers actually create usable heat, allowing more energy to be squeezed out of the reactor, utilizing neutrons that would otherwise be wasted.
+	
+	<h3>Heat Retention</h3>
+	Passive cooling has always been a bit weird, every column would lose 1°C/t to the air. This means that building large reactors was discouraged, because they would bleed way more heat into the ether. Structural columns were especially prone to this, they only really exist to make the reactor prettier, yet they are an added cost that doesn't have any practical use and only causes more passive cooling.
+	<br>
+	In comes another quite old idea, making cooling based on side surface area. Columns that have four neighbors will only cool down by 0.1°C/t, while columns with no neighbors cool down by 2.5°C/t. Any other number is smoothly interpolated between. This means that building spindly reactors that save on columns is discouraged, because doing so will increase the sideways surface area by a lot. Making a nice round or even square reactor with a lot of "filler" by using structural columns minimizes the side surface area and therefore makes for a much more efficient reactor. This also works directly against shitboxes, since the volume to surface ratio on very small reactors is quite high, meaning that shitboxes are highly affected by passive cooling.
+	
+	<h3>Cool Story, Bro</h3>
+	RBMK coolers are some of the most useless parts. I genuinely forgot what the idea even was, perhaps as a sort of emergency system (emergencies where they become useful never happen) or for high powered breeder reactors (steam channels are cheaper to use and produce a ton of power, while coolers make none). Either way, they <i>use up</i> cryogel, a notoriously shit to make liquid that can't even be properly automated. So the simplest first step was to replace that system with one that uses cold perfluoromethyl and returns room temp PFM which can be cooled back down using compressors (just like how PAs and fusion reactors are cooled!) allowing cooling to be done relatively cheaply. In addition, the cooling action should be noticably more powerful than any boiler we have, for this, they now affect all columns in a 5x5 area, cooling them by 200°C/t (that's 4,000°C a second!) down to room temperature.
+	
+	<h3>And Now, The Sadism Features</h3>
+	Control rods are useful for throttling or shutting off the reactor...but when do people actually do that? Many designs simply omit those enitrely, because there's simply no need to do any of that. To nudge people into using them again, fuel channels have a small added feature: If the fuel rod's skin heat exceeds 200°C, it can no longer be removed by hand. If it exceeds 1,000°C, even the autoloader cannot remove it. The only thing capable of swapping out hot fuel rods is the RBMK fuel crane, which is quite slow and manually operated. This means that, for sufficiently hot fuels, using an autoloader requires the reactor to be throttled via control rods. This however can still be automated using RoR: The fuel rod's depletion can be read from the fuel channel, which sends a signal that changes the control rods insertion setting. Once the autoloader is done with the fuel change, the depletion read is back to 0, and the control rods can return to the operating level.
+	<br>
+	Finally, to prevent people from skirting around not being able to remove hot fuel, the fuel channel will now explode when broken with fuel that exceeds 1,500°C skin temperature.
+	
+	<h3>ReaSim, for Flavor</h3>
+	ReaSim fuel rods were a neat idea, but ultimately a gimmick that was mostly just abused for their innate +50% flux bonus. Instead of firing four neutron streams in cardinal directions, they would fire six in fully random directions, which meant that the streams would often not hit anything, which is why the total flux being this much higher felt justified. The randomness made them unreliable, and sometimes even dangerous: There have been a few documented cases were though sheer bad luck, all six neutron streams were fired in the roughly same direction, either at a reflector or another fuel rod, causing a reaction spike which blew the reactor up.
+	<br>
+	This system was replaced with a more tame one, ReaSim fuel rods now have <i>eight</i> streams at 75% intensity in a uniform star shape (i.e. offset b 45°), which is itself offset by a random amount which is a multiple of 9°. While there's still randomness involved, random reactivity spikes should no longer happen, and flux distribution is now much more even throughout the reactor.
+	
+	</div>
+
+	<br>
+	<a class="return" href="../index.html">&lt; time to go</a>
+</div>
+
+</body>
+</html>
