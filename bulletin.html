@@ -15,6 +15,45 @@
 	<h2>Compatibility Bulletin</h2>
 	This list contains recent changes that need to be accounted for when updating, as well as removed features.
 	<hr>
+	RBMK absorbers now heat up when exposed to neutrons, making them more useful than the arguable cheaper concrete approach. 20 flux equals and extra 1°C.
+	<br>
+	RBMK passive cooling is now different, there are two values, passive cooling for center columns and passive cooling for edge columns. Columns with four neighbors will cool by 0.1°C/t while columns with no neighbors will cool by 2.5°C/t, values in between are smoothly interpolated. This replaces the old system where columns always cool by 1°C/t.
+	<br>
+	RBMK coolers no longer inhale cryogel, instead they use cold PFM and output regular PFM, allowing the coolant to be reused with compressors. Coolers also act in a 5x5 area, where all columns will be cooled by 200°C/t, down to a minimum of 20°C. This makes the affected rods unsuitable for power production, but it allows for very rapid shutting down of a hot reactor.
+	<br>
+	RBMK reasim fuel channels no longer fire neutron streams in six fully randomized directions, but rather in eight which are evenly spaced out by 45°, and offset randomly by a multiple of 9°. Neutron stream intensity is also reduced by 25% to compensate for the higher output. This means neutrons are now more evenly distributed, and fixes a rare issue where by pure bad luck, all neutron streams hit the same fuel rod/reflector, causing a massive reaction spike for no good reason.
+	<br>
+	RBMK fuel rods can no longer be cycled automatically by the autoloader if the skin temperature exceeds 1,000°C, and manually removing one cannot be done unless it is colder than 200°C. Manual fuel cranes are not subject to any restrictions, and can be used to safely remove fuel when nothing else can.
+	<br>
+	RBMK columns will now undergo meltdown if broken when there's fuel loaded in them, and that fuel's skin temp exceeds 1,500°C.
+	<br>
+	The annihilator is now polluting, creating radiation when scrapping radioactive items and pollution when burning polluting fluids (with a 200% modifier).
+	
+	<h3>X5628</h3>
+	Huge breaking changes for RBMKS
+	<br>
+	528 mode now has mandatory reasim control rods which work like standard control rods but require power when moving.
+	<br>
+	
+	<h3>X5617</h3>
+	The already deprecated T45 no longer has any resistances beyond the vanilla armor points.
+	
+	<h3>X5615</h3>
+	There is now a new version of the industrial turbine, the old block remains with the (LEGACY) tag. The new turbine has no GUI, the steam compressor can be configured via a valve on the front. Additionally, it has a flywheel, which means it will slowly spin up when steam is supplied and spin down as steam cuts out, smoothing out the power production. The steam buffer now scales down with higher pressures, meaning that the ratio of turbines needed in a multi step setup is always 1:1:1:1.
+	<br>
+	Due to the turbine rework, the industrial turbine shares some code with the levis, which now no longer have a power buffer at all, similar to stirling engines, steam engines and MHD turbines. This removes the need for volatile power buffers which had been introduced not long ago with the battery rework.
+	<br>
+	The crucible now places materials smelted without a recipe in the recipe buffer, to allow use of materials if a recipe template is inserted <i>after</i> the material has been smelted. This means setups that rely on using no-recipe mode are essentially flipped now. To restore the old behavior, use the "/ntmserver set LEGACY_CRUCIBLE_RULES true" command.
+	
+	<h3>X5593</h3>
+	Radiation absorber blocks have been changed to use metadata, the old blocks still exist with the (LEGACY) tag, however they employ a new system that automatically converts them to the new variants on chunk load.
+	<br>
+	Satellite deco blocks have been removed, they weren't exactly pretty, hideously expensive, and used up an entire block ID per piece.
+	<br>
+	Most blast doors have received new models and textures, which also changes the selection of door skins. The door skin changer item is now deprecated, skins can be cycled with the screwdriver.
+	
+	<h3>X5572</h3>
+	Self-charging batteries have been reworked, using one item ID and meta for the new subtypes. The old items still exist with the (LEGACY) tag.
 	
 	<h3>X5567</h3>
 	Batteries have changed fundamentally, most battery items and all existing energy storage blocks have been removed. Instead, there are new battery and capacitor items, which can be connected to a power grid using a battery socket. The socket acts similarly to the old energy storage blocks, but it has no buffer on its own without a battery item. The FEnSU now has a new version which is much larger and stores infinite energy.
