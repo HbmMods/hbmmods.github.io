@@ -15,6 +15,12 @@
 	<h2>Compatibility Bulletin</h2>
 	This list contains recent changes that need to be accounted for when updating, as well as removed features.
 	<hr>
+	
+	<h3>X5628</h3>
+	Huge breaking changes for RBMKS
+	<br>
+	528 mode now has mandatory reasim control rods which work like standard control rods but require power when moving.
+	<br>
 	RBMK absorbers now heat up when exposed to neutrons, making them more useful than the arguable cheaper concrete approach. 20 flux equals and extra 1°C.
 	<br>
 	RBMK passive cooling is now different, there are two values, passive cooling for center columns and passive cooling for edge columns. Columns with four neighbors will cool by 0.1°C/t while columns with no neighbors will cool by 2.5°C/t, values in between are smoothly interpolated. This replaces the old system where columns always cool by 1°C/t.
@@ -28,12 +34,6 @@
 	RBMK columns will now undergo meltdown if broken when there's fuel loaded in them, and that fuel's skin temp exceeds 1,500°C.
 	<br>
 	The annihilator is now polluting, creating radiation when scrapping radioactive items and pollution when burning polluting fluids (with a 200% modifier).
-	
-	<h3>X5628</h3>
-	Huge breaking changes for RBMKS
-	<br>
-	528 mode now has mandatory reasim control rods which work like standard control rods but require power when moving.
-	<br>
 	
 	<h3>X5617</h3>
 	The already deprecated T45 no longer has any resistances beyond the vanilla armor points.
