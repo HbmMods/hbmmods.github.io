@@ -16,6 +16,25 @@
 	This list contains recent changes that need to be accounted for when updating, as well as removed features.
 	<hr>
 	
+	<h3>X5751</h3>
+	Removed the config that allowed old bedrock ores to be enabled. Existing old bedrock ore setups will continue to exist like they did before, but new chunks can no longer generate these ores.
+	<br>
+	The single block steam turbine has been deprecated and will be removed soon. The recipe has been removed. For early game steam use, make a steam engine instead.
+	<br>
+	Removed the anvil dismantling recipes for chicago pile output rods, the PUREX recipes are now mandatory.
+	<br>
+	Conveyor items will now destroy themselves and the covneyor belt they are on if they are too densely packed. 25 conveyor objects will exceed that threshold, which usually only happens when there's a looping belt where items are added but not removed fast enough, inevitably lagging the game.
+	<br>
+	Steam production of the ZIRNOX has been increased by 50% with no further downside. Larger turbines may be needed for certain setups.
+	<br>
+	Flashgold and flashlead are now mae in the PUREX, existing setups using the autocrafter will no longer work.
+	<br>
+	Upgraded the AUTOCAL's script interpreter to support MS-ES v1.1.
+	<br>
+	Mask man spawning rules have changed. Instead of hourly checks that only have a 33% chance of triggering, if the conditions are met, a timer is started. The timer is ended immediately if the conditions are no longer met. If the timer runs out, then mask man spawns. If the spawn is only one minute away, then an additional message appears.
+	<br>
+	GTNH-NEI's ability to drag items into filter slots has been temporarily disabled.
+	
 	<h3>X5719</h3>
 	Advanced alloy has been removed. All recipes that used to feature AA now use something else. The tools and armor still exist, but they are deprecated. To compensate, steel tools now have diamond mining tier, more durability and AA's tool abilities, the only difference is that they don't have the same ridiculous durability.
 	
