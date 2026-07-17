@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bobcat's Blog</title>
+<link href="../common.css" rel="stylesheet" type="text/css">
+<link rel="icon" type="image/png" href="/img/favicon.png">
+</head>
+
+<body>
+
+<div class="content">
+	<h1 style="text-align:center;">Bobbob's Bob</h1>
+	<div class="blog-entry">
+	
+	<h3>So what did you do this past month?</h3>
+	Fuckall, I suppose. Spent like a solid week playing Deltarune, trying to avoid dumb shit (like this thing called "The Inter Nets"), and doing the bare minimum work on NTM.
+	
+	<h3>Jarona</h3>
+	Although some parts were lacking int polish (heavily), Deltagoat Episode 5 Part 1 was quite good.
+	
+	<h3>Also we have like pneumatic storage now</h3>
+	So basically the reason why I didn't do jackshit was mainly because I wasted a quite frankly immoral amount of time on the pneumatic storage network. It's like AE2 except it comes with native RoR integration, doesn't require you to go meteor hunting and is way buggier.
+	
+	<h3>How to keep track of 10,000 items</h3>
+	Making a chest is easy, it's just a bunch of slots. Making a big chest is a bit harder, eventually you'll run out of screen space to put slots on, so you might want to opt for a scroll bar or something. Making a few chests connected into one single interface isn't much harder than that, but instead of one tile entity you now source your stacks from several.
+	<br><br>
+	Now all of that doesn't sound all too impressive, but a proper storage system à la AE2 doesn't work quite that way. For one, the individual slot ceases to exist, equal items are grouped together into a "virtual" slot of sorts, which completely bypasses things like stack size limitations. Since the visible item representation is a combination of potentially multiple slots, the exact location of the item (i.e. what tile entity it is in and what slot) also becomes less relevant. Finally, given this is modded Minecraft, we might want to handle more than a few dozen items, perhaps it could be as much as several thousand types.
+	
+	<h3>PainB</h3>
+	Now we know both ends of the equation, on the base level we have tile entities with traditional slots or gauges like chests and mass storage units do, and on the other side, the end result is grouped together items that can be interacted with. Now we gotta find out how to connect the first with the last part.
+	<br><br>
+	The simplest, quickest, and safest variant would be relatively easy, simply iterate over every connected container and every slot in those containers, find the items you need, add and remove items, that sort of deal. However, as you remember, we want to be able to handle thousands of types spread over potentially thousands of slots, and if every interaction with the system (especially automated ones like logistics requests via the exporter) causes many, many thousands of slot checks, that'll basically reduce our <s>life expectancy</s> TPS to 0. So how about we introduce some caching?
+	
+	<h3>Kesh</h3>
+	First things first, we don't want to iterate over everything, having to check items that may not even have changed. For that I made a thing called the <i>Slot Monitor</i>. Basically, every slot of a pneumatics compatible storage unit has a monitor, the monitor holds a copy of the slot it monitors, and if that slot changes (something we know exactly when it happens), then the slot monitor will compare its cached version of the slot with the real one, see if there's a difference, and then "push" that change to the system. What does that mean, though?
+	
+	<h3>Kesh 2: The Keshening</h3>
+	Well the slot monitors are still in the end just slots (although they support higher stack sizes, given they can also monitor MSU-like pneumatic bulk storages), so that alone didn't do much. We need some place for the monitors to report to. In a more simple system, the connected pneumatics network itself could be that system, which would result int a singular list of all items in that particular network. However, NTM's pneumatics don't work that way, storage containers are limited in range depending on the compressed air they receive, and if the compressed air runs out, they stop working entirely. So the availability of items is always in relation to the endpoint (access point, importer, exporter) too. Therefore, anything that inserts/extracts items needs its own cache.
+	
+	<h3>Kesh 3: Revengeance</h3>
+	Now we have a list of stacks, and we have some place to report them to, but we don't have a usable format yet. We still have 50 individual stacks of iron instead of one combined stack. The final piece is an access point cache specific map of all item <i>types</i>, generated out of the item id, meta and NBT data, which keeps track of how many stacks there are of that type. Using a hashing function, we can quickly find a list of compatible types, and add or remove items whenever a slot monitor reports a change. This way, we only ever really change the data we need to, when it actually has to happen.
+	
+	<h3>Containers And You</h3>
+	Now we have all the data in the right format, but we still need to represent them to the player. Minecraft's inventories are composed of two parts: The strictly client-side GUI which handles the graphics and the mouse and keyboard input, and the container, which marries the GUI with the underlying inventory, handling all the slot logic, slot placement, et cetera.
+	<br><br>
+	Minecraft's container code is written like complete fucking vomit. It would easily be the worst part of the game's code if world gen didn't exist. Forge's missing mappings don't help, making it harder to decypher this complete shitfest of a class. After several hours of dicking around, crashing the game at least 20 times and re-implementing most of the container's functionality myself so it works with our special system, it finally worked.
+	
+	<h3>The plot twist everyone saw coming</h3>
+	The way it originally worked was not unlike a regular container, the container just has as many slots as there are items visible on screen at the same time, every time the player moved the scroll bar, it would send a signal to the server, "please scroll here", then the sever would change the contents of the internal dummy inventory for the container to use. Of course this being a server-side action, there was a short but noticeable delay between moving the scroll bar and the inventory updating, but it was no big deal, and it actually worked. Until it didn't.
+	<br><br>
+	See, for a list of a few hundred item types to be usable, one might want to make use of sorting and search functions. Search typically works off of the name, and localization only exists on the client. The server doesn't speak Spanish, after all. Therefore, the server, which until then was responsible for scrolling, ordering and filtering our results, was unable to do any of that based on localized names.
+	
+	<h3>Ja-st kidding</h3>
+	Filtering of items per name can only ever happen on the client. Which means that the client needs a singular list of every single item in the network. Ain't that fun.
+	<br><br>
+	It was time to completely tear apart the existing container (that took a lot of time to make) to come up with an entirely different system. Every time we open the access point, we need a list of the entire network's contents. Packing a few hundred items, potentially with NBT, into one packet, is not a great idea, because packet size is limited. Luckily, we can just bunch up a few items (I opted for 40 at once, that's as much as there's visible on screen at any given time), and send multiple packets. However, we need to keep track of changes that happen while the GUI is open. Luckily, the slot monitor can help us with that, since it can track changes easily, we can easily recognize new types being added or an amount changing, meaning we only send the delta, the individual change, only when it happens.
+	<br><br>
+	Now that the entire item list exists on the client, we can filter and sort by name, and also since the display only happens on the client's container, scrolling is now silky smooth.
+	
+	<h3>And that's all, folks!</h3>
+	Haha no, there's of course still things like the importer and exporter which allow for proper automation. Luckily, again, those don't do anything we haven't done before, inserting and extracting items by this point are just standardized functions in the stack cache of the access point, so not counting the GUI buttons and special cases the exporter needs to handle, the actual implementation was comparatively easy.
+	<br><br>
+	At the time of writing, the pneumatic storage network is still not craftable, but it should be functional. There's still some bugs to iron out, a few dupes, some weird behavior when reconnecting access points to the network, stuff like that. The exporter's functionality, allowing to withdraw precise requested quantities, came along with an addition to the assembly machine, allowing the recipe to be changed with an RoR command. This means that, although a bit complicated, proper recipe on-demand style automation, is now possible. Using the AUTOCAL, it's now feasible to monitor a stockpile of several materials, and automatically change the recipe depending on what item's stockpile is getting low.
+	
+	</div>
+
+	<br>
+	<a class="return" href="../index.html">&lt; they are eating my flesh</a>
+</div>
+
+</body>
+</html>
